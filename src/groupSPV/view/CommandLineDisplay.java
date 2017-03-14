@@ -1,4 +1,4 @@
-package groupSPV.controller;
+package groupSPV.view;
 
 import org.bitcoinj.core.StoredBlock;
 import org.bitcoinj.store.BlockStoreException;

@@ -5,6 +5,7 @@ import java.io.File;
 import org.bitcoinj.utils.BriefLogFormatter;
 
 import groupSPV.model.CustomKit;
+import groupSPV.view.CommandLineDisplay;
 
 /** BlockchainDriver is a driver class to initiate the downloading the Blockchain and display it.
 *
