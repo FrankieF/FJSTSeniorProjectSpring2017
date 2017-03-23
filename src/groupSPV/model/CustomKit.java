@@ -1,10 +1,18 @@
 package groupSPV.model;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
+import org.bitcoinj.core.Block;
 import org.bitcoinj.core.BlockChain;
 import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.Peer;
+import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.StoredBlock;
+import org.bitcoinj.core.listeners.NewBestBlockListener;
+import org.bitcoinj.core.listeners.ReorganizeListener;
 import org.bitcoinj.kits.WalletAppKit;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.store.BlockStore;
@@ -20,10 +28,19 @@ public class CustomKit {
 
 	/** WalletAppKit object to simplify. */
 	private WalletAppKit wak;
+	
+	/** List of all current NewBestBlockListeners. */
+	private List<NewBestBlockListener> newBestBlockListeners = new ArrayList<NewBestBlockListener>();
+	
+	/** List of all current ReorganizeListeners. */
+	private List<ReorganizeListener> reorganizeListeners = new ArrayList<ReorganizeListener>();
 
 	/** Default file prefix string needed for WalletAppKit. */
 	private static final String defaultFilePrefix = "forwarding-service";
 	
+	/* -----------------------
+	 *          SETUP
+	 * ----------------------- */
 	/** Constructor for creating a CustomKit at a particular saveLocation. Uses default bitcoin network.
 	 * @param saveLocation File object of folder location to save client files. */
 	public CustomKit(File saveLocation) {
@@ -44,6 +61,15 @@ public class CustomKit {
 		wak.awaitRunning(); // Wait for WAK to fully start
 	}
 	
+	/** Stops synchronizing processes, holds until fully stopped. */
+	public void stopAndWait() {
+		wak.stopAsync(); // Stop WAK
+		wak.awaitTerminated(); // Wait for WAK to fully stop
+	}
+	
+	/* -----------------------
+	 *      VARIOUS DATA
+	 * ----------------------- */
 	/** Get the best known Blockchain height.
 	 * @return Blockchain height. */
 	public int getHeight() {
@@ -67,5 +93,84 @@ public class CustomKit {
 	 * @return BlockStore. */
 	public BlockStore getBlockStore() {
 		return getBlockChain().getBlockStore();
+	}
+	
+	/* -----------------------
+	 *    LISTENER HANDLING
+	 * ----------------------- */
+	/** Adds a Blockchain NewBlockListener.
+	 * @param nbbl NewBestBlockListener to add. */
+	public void addNewBestBlockListener(NewBestBlockListener nbbl) {
+		newBestBlockListeners.add(nbbl);
+		wak.chain().addNewBestBlockListener(nbbl);
+	}
+	
+	/** Removes a Blockchain NewBlockListener.
+	 * @param nbbl NewBestBlockListener to remove. */
+	public void removeNewBestBlockListener(NewBestBlockListener nbbl) {
+		newBestBlockListeners.remove(nbbl);
+		wak.chain().removeNewBestBlockListener(nbbl);
+	}
+	
+	/** Removes all Blockchain NewBlockListener(s). */
+	public void removeAllNewBestBlockListeners() {
+		for(NewBestBlockListener nbbl : newBestBlockListeners)
+			wak.chain().removeNewBestBlockListener(nbbl);
+		newBestBlockListeners.clear();
+	}
+
+	/** Adds a Blockchain ReorganizeListener.
+	 * @param rl ReorganizeListener to add. */
+	public void addReorganizeListener(ReorganizeListener rl) {
+		reorganizeListeners.add(rl);
+		wak.chain().addReorganizeListener(rl);
+	}
+	
+	/** Removes a Blockchain ReorganizeListener.
+	 * @param rl ReorganizeListener to remove. */
+	public void removeReorganizeListener(ReorganizeListener rl) {
+		reorganizeListeners.remove(rl);
+		wak.chain().removeReorganizeListener(rl);
+	}
+	
+	/** Removes all Blockchain ReorganizeListener(s). */
+	public void removeAllReorganizeListener() {
+		for(ReorganizeListener rl : reorganizeListeners)
+			wak.chain().removeReorganizeListener(rl);
+		reorganizeListeners.clear();
+	}
+	
+	/* -----------------------
+	 *     FULL NODE/PEER
+	 * ----------------------- */
+	/** Returns list of all connected Peers.
+	 * @return List of connected Peers. */
+	private List<Peer> getConnectedPeers() {
+		return wak.peerGroup().getConnectedPeers();
+	}
+	
+	/** Returns a currently connected Peer.
+	 * @return Connected Peer. */
+	protected Peer getConnectedPeer() {
+		return getConnectedPeers().get(0);
+	}
+	
+	/** Requests and returns a full Block from supplied Peer.
+	 * @param peer Full peer to request Block from.
+	 * @param blockHash Block hash to request.
+	 * @return Full block.
+	 * @throws InterruptedException Thrown if interrupted.
+	 * @throws ExecutionException Thrown if error arises. */
+	protected Block getFullBlock(Peer peer, Sha256Hash blockHash) throws InterruptedException, ExecutionException {
+		return peer.getBlock(blockHash).get();
+	}
+	
+	/** Requests and returns a full Block from Peer from getConnectedPeer().
+	 * @param blockHash Block hash to request.
+	 * @return Full block.
+	 * @throws InterruptedException Thrown if interrupted.
+	 * @throws ExecutionException Thrown if error arises. */
+	public Block getFullBlock(Sha256Hash blockHash) throws InterruptedException, ExecutionException {
+		return getFullBlock(getConnectedPeer(), blockHash);
 	}
 }
