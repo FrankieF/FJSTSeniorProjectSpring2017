@@ -15,6 +15,7 @@ import org.bitcoinj.core.listeners.NewBestBlockListener;
 import org.bitcoinj.core.listeners.ReorganizeListener;
 import org.bitcoinj.kits.WalletAppKit;
 import org.bitcoinj.params.MainNetParams;
+import org.bitcoinj.params.TestNet3Params;
 import org.bitcoinj.store.BlockStore;
 
 /** CustomKit is a "Facade" class to the bitcoinj WalletAppKit class.
@@ -38,13 +39,30 @@ public class CustomKit {
 	/** Default file prefix string needed for WalletAppKit. */
 	private static final String defaultFilePrefix = "forwarding-service";
 	
+	/** TestNet file prefix string needed for WalletAppKit. */
+	private static final String testFilePrefix = "forwarding-service-testnet";
+	
+	/** Bitcoin network selection integer. */
+	public static final int MAINNET = 0, TESTNET = 1;
+	
 	/* -----------------------
 	 *          SETUP
 	 * ----------------------- */
 	/** Constructor for creating a CustomKit at a particular saveLocation. Uses default bitcoin network.
 	 * @param saveLocation File object of folder location to save client files. */
 	public CustomKit(File saveLocation) {
-		this(MainNetParams.get(), saveLocation, defaultFilePrefix);
+		this(MAINNET, saveLocation);
+	}
+	
+	/** Constructor for creating a CustomKit at a particular saveLocation. Uses network ints.
+	 * TestNet if 1, MainNet if anything else.
+	 * @param network Network selection integer.
+	 * @param saveLocation File object of folder location to save client files. */
+	public CustomKit(int network, File saveLocation) { 
+		if (network == TESTNET)
+			wak = new WalletAppKit(TestNet3Params.get(), saveLocation, testFilePrefix);
+		else
+			wak = new WalletAppKit(MainNetParams.get(), saveLocation, defaultFilePrefix);
 	}
 
 	/** Constructor for creating a CustomKit using particular bitcoinj parameters.
@@ -54,7 +72,7 @@ public class CustomKit {
 	protected CustomKit(NetworkParameters params, File saveLocation, String filePrefix) {
 		wak = new WalletAppKit(params, saveLocation, filePrefix);
 	}
-
+	
 	/** Starts downloading of Blockchain, holds until fully downloaded. */
 	public void startAndWait() {
 		wak.startAsync(); // Start WAK

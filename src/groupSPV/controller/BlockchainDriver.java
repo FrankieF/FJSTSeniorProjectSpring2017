@@ -19,11 +19,16 @@ public class BlockchainDriver {
 	private static final String saveLocation = getSystemPath() + "SeniorProject_Bitcoin_Client\\";
 
 	/** Main method.
-	 * @param args Arguments not utilized. */
+	 * @param args Argument stating "testnet" will use Bitcoin Test network. */
 	public static void main(String[] args) {
 		BriefLogFormatter.init(); // Sets logging format, default for now
 
 		CustomKit kit = new CustomKit(new File(saveLocation));
+		
+		if (args.length > 0 && args[0].equals("testnet")) {
+			System.out.println("TestNet in use.");
+			kit = new CustomKit(CustomKit.TESTNET, new File(saveLocation + "test\\"));
+		}
 
 		System.out.println("Downloading in progress...");
 		kit.startAndWait();
