@@ -1,15 +1,18 @@
-/**
- * 
- */
 package groupSPV.controller;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 import org.bitcoinj.core.*;
-import org.bitcoinj.wallet.*;
+import org.bitcoinj.params.TestNet3Params;
+import org.bitcoinj.wallet.Wallet;
+import org.bitcoinj.wallet.listeners.AbstractWalletEventListener;
+import org.bitcoinj.wallet.listeners.WalletCoinsSentEventListener;
 
 /**
  * @author Frankie Fasola
+ * @author James Donnell
+ * @author Spencer Escalante
+ * @author Trevor Silva
  * Interfaces between the client and the wallet by wrapping the wallet methods.
  */
 public class WalletController
@@ -27,12 +30,21 @@ public class WalletController
 	}
 	
 	/**
+	 * Only used for internal class testing.
+	 * @param params
+	 */
+	private WalletController (NetworkParameters params) {
+		wallet = new Wallet(params);
+		addEventListeners();
+	}
+	
+	/**
 	 * @author Francis Fasola
 	 * @return The wallet.
 	 */
-//	public Wallet getWallet() {
-//		return this.wallet;
-//	}
+	public Wallet getWallet() {
+		return this.wallet;
+	}
 	
 	/**
 	 * @author Francis Fasola
@@ -53,6 +65,13 @@ public class WalletController
 		this.wallet.addWatchedAddress(address);
 	}
 	
+	/***
+	 * @author Francis Fasola
+	 * Allows a user to change the password to their wallet.
+	 * 
+	 * @param newPassword The new password.
+	 * @param oldPassword The old password.
+	 */
 	public void changePassword (CharSequence newPassword, CharSequence oldPassword) {
 		this.wallet.changeEncryptionPassword(oldPassword, newPassword);
 	}
@@ -114,6 +133,27 @@ public class WalletController
 	
 	/**
 	 * @author Francis Fasola
+	 * Creates a new ECKey (Eliptic Curve) and adds it to the wallet.
+	 * 
+	 * @param params Network parameters for the wallet.
+	 */
+	public void addNewKey(NetworkParameters params) {
+		ECKey key = new ECKey();
+		this.wallet.importKey(key);
+		System.out.println("Public key: " + key.toAddress(params));
+		System.out.println("Private key: " + key.getPrivateKeyEncoded(params));
+	}
+	
+	/**
+	 * @author Francis Fasola
+	 * @return The list of keys imported into the wallet.
+	 */
+	public List<ECKey> getKeys() {
+		return this.wallet.getImportedKeys();
+	}
+	
+	/**
+	 * @author Francis Fasola
 	 * Sends Bitcoin to the specified bitcoin address.
 	 * 
 	 * @param params The network parameters.
@@ -127,6 +167,7 @@ public class WalletController
 	 */
 	public boolean sendBitcoin(NetworkParameters params, PeerGroup peers, String address, String amount) 
 				throws InsufficientMoneyException, ExecutionException, InterruptedException {
+		System.out.println("Entered send function");
 		Address destinationAddress = Address.fromBase58(params, address);
 		Wallet.SendResult result = this.wallet.sendCoins(peers, destinationAddress, Coin.parseCoin(amount));
 		if(result != null) {
@@ -144,6 +185,7 @@ public class WalletController
 	 * @author Francis Fasola
 	 * Adds the event listeners to the wallet.
 	 */
+	@SuppressWarnings("deprecation")
 	private void addEventListeners() {
 		//onCoinsReceived(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance)
 		this.wallet.addCoinsReceivedEventListener((wallet, tx, prevBalance, newBalance) -> {
@@ -154,20 +196,25 @@ public class WalletController
 			System.out.println("VERSION: " + tx.getVersion());
 		});
 		//			onCoinsSent(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance)
-		this.wallet.addCoinsSentEventListener((wallet, tx, prevBalance, newBalance) -> {
-			System.out.println("****** COINS SENT ******");
-			System.out.println("RECEIVED: " + tx.getValue(wallet) + " . NEW BALANCE: " + wallet.getBalance());
+		this.wallet.addCoinsSentEventListener(new WalletCoinsSentEventListener() {
+			
+			@Override
+			public void onCoinsSent(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance) {
+				System.out.println("****** COINS SENT ******");
+				System.out.println("RECEIVED: " + tx.getValue(wallet) + " . NEW BALANCE: " + wallet.getBalance());				
+			}
 		});
 		// 			onTransactionConfidenceChanged(Wallet wallet, Transaction tx)
-		this.wallet.addTransactionConfidenceEventListener((wallet, tx) -> {
+		/*this.wallet.addTransactionConfidenceEventListener((wallet, tx) -> {
 			System.out.println("***** CONFIDENCE CHANGED *****");
 			System.out.println("HASH: " + tx.getHashAsString());
 			TransactionConfidence c = tx.getConfidence();
 			System.out.println("NEW BLOCK DEPTH: " + c.getDepthInBlocks());
-		});
+		});*/
 		// 			onKeysAdded(List<ECKey> keys)
 		this.wallet.addKeyChainEventListener(e -> {
 			System.out.println("KEY ADDED: " + e.toString());
 		});
-	}	
+	}
+	
 }
