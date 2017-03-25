@@ -1,12 +1,12 @@
 package groupSPV.controller;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-
 import org.bitcoinj.core.*;
-import org.bitcoinj.params.TestNet3Params;
+import org.bitcoinj.wallet.SendRequest;
 import org.bitcoinj.wallet.Wallet;
-import org.bitcoinj.wallet.listeners.AbstractWalletEventListener;
+import org.bitcoinj.wallet.Wallet.SendResult;
 import org.bitcoinj.wallet.listeners.WalletCoinsSentEventListener;
+import com.google.common.util.concurrent.MoreExecutors;
 
 /**
  * @author Frankie Fasola
@@ -18,6 +18,7 @@ import org.bitcoinj.wallet.listeners.WalletCoinsSentEventListener;
 public class WalletController
 {
 	private Wallet wallet;
+	private NetworkParameters params;
 
 	/***
 	 * @author Francis Fasola
@@ -26,6 +27,7 @@ public class WalletController
 	 */
 	public WalletController (Wallet wallet) {
 		this.wallet = wallet;
+		params = wallet.getParams();
 		addEventListeners();
 	}
 	
@@ -33,8 +35,9 @@ public class WalletController
 	 * Only used for internal class testing.
 	 * @param params
 	 */
-	private WalletController (NetworkParameters params) {
+	public WalletController (NetworkParameters params) {
 		wallet = new Wallet(params);
+		this.params = params;
 		addEventListeners();
 	}
 	
@@ -53,7 +56,7 @@ public class WalletController
 	 * @return The balance of the wallet.
 	 */
 	public Coin getBalance(Wallet.BalanceType type) {
-		return type.equals(null) ? this.wallet.getBalance() : this.wallet.getBalance(type);		
+		return type == null ? this.wallet.getBalance() : this.wallet.getBalance(type);		
 	}
 	
 	/***
@@ -137,7 +140,7 @@ public class WalletController
 	 * 
 	 * @param params Network parameters for the wallet.
 	 */
-	public void addNewKey(NetworkParameters params) {
+	public void addNewKey() {
 		ECKey key = new ECKey();
 		this.wallet.importKey(key);
 		System.out.println("Public key: " + key.toAddress(params));
@@ -165,36 +168,47 @@ public class WalletController
 	 * @throws {@link ExecutionException}
 	 * @throws {@link InterruptedException}
 	 */
-	public boolean sendBitcoin(NetworkParameters params, PeerGroup peers, String address, String amount) 
+	@SuppressWarnings("deprecation")
+	public void sendBitcoin(String address, String amount) 
 				throws InsufficientMoneyException, ExecutionException, InterruptedException {
-		System.out.println("Entered send function");
 		Address destinationAddress = Address.fromBase58(params, address);
-		Wallet.SendResult result = this.wallet.sendCoins(peers, destinationAddress, Coin.parseCoin(amount));
+		SendRequest request = SendRequest.to(destinationAddress, Coin.MILLICOIN);
+		SendResult result = wallet.sendCoins(request);
+		result.broadcastComplete.addListener(() -> {
+			System.out.println("Coins were sent. Transaction hash: " + result.tx.getHashAsString());
+		}, MoreExecutors.sameThreadExecutor());
 		if(result != null) {
 			result.broadcastComplete.get();
 			System.out.println("The money was sent!");
-			return true;
 		}
-		else {
-			System.out.println("Something went wrong sending the money.");
-			return false;
-		}
+	}
+	
+	/**
+	 * @author Francis Fasola
+	 * When coins are received this will report information; used as an event listner.
+	 * 
+	 * @param wallet The wallet receiving the coins.
+	 * @param tx The transaction sending the coins.
+	 * @param prevBalance The previous balance of the wallet.
+	 * @param newBalance The new balance of the wallet.
+	 */
+	private void coinsRecevied(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance) {
+		System.out.println("****** COINS RECEIVED ******");
+		System.out.println("HASH: " + tx.getHashAsString());
+		System.out.println("RECEIVED: " + tx.getValue(wallet) + " . NEW BALANCE: " + wallet.getBalance());
+		System.out.println("PREVIOUS BALANCE: " + prevBalance.value + " NEW BALANCE: " + newBalance.value);
+		System.out.println("VERSION: " + tx.getVersion());
+		Coin value = tx.getValueSentToMe(wallet);
+		System.out.println("Received transaction for " + value.toFriendlyString() + ": " + tx);
 	}
 	
 	/***
 	 * @author Francis Fasola
 	 * Adds the event listeners to the wallet.
 	 */
-	@SuppressWarnings("deprecation")
 	private void addEventListeners() {
 		//onCoinsReceived(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance)
-		this.wallet.addCoinsReceivedEventListener((wallet, tx, prevBalance, newBalance) -> {
-			System.out.println("****** COINS RECEIVED ******");
-			System.out.println("HASH: " + tx.getHashAsString());
-			System.out.println("RECEIVED: " + tx.getValue(wallet) + " . NEW BALANCE: " + wallet.getBalance());
-			System.out.println("PREVIOUS BALANCE: " + prevBalance.value + " NEW BALANCE: " + newBalance.value);
-			System.out.println("VERSION: " + tx.getVersion());
-		});
+		this.wallet.addCoinsReceivedEventListener(this::coinsRecevied);
 		//			onCoinsSent(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance)
 		this.wallet.addCoinsSentEventListener(new WalletCoinsSentEventListener() {
 			
