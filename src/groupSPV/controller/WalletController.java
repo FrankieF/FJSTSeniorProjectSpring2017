@@ -4,7 +4,9 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 import org.bitcoinj.core.*;
+import org.bitcoinj.wallet.SendRequest;
 import org.bitcoinj.wallet.Wallet;
+import org.bitcoinj.wallet.Wallet.SendResult;
 import org.bitcoinj.wallet.listeners.WalletCoinsSentEventListener;
 
 import com.google.common.util.concurrent.MoreExecutors;
@@ -128,7 +130,7 @@ public class WalletController
 	 * @param params The network parameters of the client.
 	 * @param key String representation of the private key(s).
 	 */
-	public void addExistingKeys(NetworkParameters params, String... keys) {
+	public void addExistingKeys(String... keys) {
 		for (String key : keys) {
 			DumpedPrivateKey _key = DumpedPrivateKey.fromBase58(params, key);
 			this.wallet.importKey(_key.getKey());
@@ -160,7 +162,6 @@ public class WalletController
 	 * @author Francis Fasola
 	 * Sends Bitcoin to the specified bitcoin address.
 	 * 
-	 * @param params The network parameters.
 	 * @param peers The peer group the wallet is apart of. 
 	 * @param address String representation of the public address.
 	 * @param amount The amount of Bitcoin to send (uses {@link Coin.parseCoin}). 
@@ -170,37 +171,14 @@ public class WalletController
 	 * @throws {@link InterruptedException}
 	 */
 	@SuppressWarnings("deprecation")
-	public boolean sendBitcoin(PeerGroup peers, String address, String amount) 
+	public void sendBitcoin(String address, String amount) 
 				throws InsufficientMoneyException, ExecutionException, InterruptedException {
 		Address destinationAddress = Address.fromBase58(params, address);
-		Wallet.SendResult result = this.wallet.sendCoins(peers, destinationAddress, Coin.parseCoin(amount));
-		if(result != null) {
-			result.broadcastComplete.get();
-			result.broadcastComplete.addListener(() -> {
-				System.out.println("Coins were sent. Transaction hash: " + result.tx.getHashAsString());
-				}, MoreExecutors.sameThreadExecutor());
-			return true;
-		}
-		else {
-			System.out.println("Something went wrong sending the money.");
-			return false;
-		}
-		
-		/*********************
-		 * Using the following code caused bitcoins to be sent to a second address.
-		 * The cause of this has to be figured out.
-		 * -Frank
-		 *********************/
-		/*Address destinationAddress = Address.fromBase58(params, address);
-		SendRequest request = SendRequest.to(destinationAddress, Coin.MILLICOIN);
+		SendRequest request = SendRequest.to(destinationAddress, Coin.parseCoin(amount));
 		SendResult result = wallet.sendCoins(request);
 		result.broadcastComplete.addListener(() -> {
 			System.out.println("Coins were sent. Transaction hash: " + result.tx.getHashAsString());
 		}, MoreExecutors.sameThreadExecutor());
-		if(result != null) {
-			result.broadcastComplete.get();
-			System.out.println("The money was sent!");
-		} */
 	}
 	
 	/**
