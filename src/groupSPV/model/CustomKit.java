@@ -1,7 +1,9 @@
 package groupSPV.model;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -71,6 +73,13 @@ public class CustomKit {
 	 * @param filePrefix File prefix needed for WalletAppKit. */
 	protected CustomKit(NetworkParameters params, File saveLocation, String filePrefix) {
 		wak = new WalletAppKit(params, saveLocation, filePrefix);
+	}
+	
+	/***
+	 * @return The wallet app kit.
+	 */
+	public WalletAppKit getWalletAppKit() {
+		return this.wak;
 	}
 	
 	/** Starts downloading of Blockchain, holds until fully downloaded. */
@@ -190,5 +199,23 @@ public class CustomKit {
 	 * @throws ExecutionException Thrown if error arises. */
 	public Block getFullBlock(Sha256Hash blockHash) throws InterruptedException, ExecutionException {
 		return getFullBlock(getConnectedPeer(), blockHash);
+	}
+	
+	/** Returns Version of StoredBlock on disk.
+	 * @param StoredBlock block that is in question
+	 * @return String Version of the BlockStore. */
+	public String getBlockStoreVersion(StoredBlock block) {
+		String[] info = block.toString().split("\\r?\\n");
+		return info[2].split(":")[1];
+	}
+	
+	/** Returns Vervion of StoredBlock on disk.
+	 * @param StoredBlock block that is in question
+	 * @return 
+	 * @return String Time of the BlockStore. */
+	public String getBlockStoreTime(StoredBlock block) {
+		String[] info = block.toString().split("\\r?\\n");
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(Integer.valueOf(info[5].
+				substring(info[5].indexOf(':') + 1, info[5].indexOf('(')).trim()) * 1000L));
 	}
 }
