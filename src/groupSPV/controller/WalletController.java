@@ -1,11 +1,12 @@
 package groupSPV.controller;
+
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+
 import org.bitcoinj.core.*;
-import org.bitcoinj.wallet.SendRequest;
 import org.bitcoinj.wallet.Wallet;
-import org.bitcoinj.wallet.Wallet.SendResult;
 import org.bitcoinj.wallet.listeners.WalletCoinsSentEventListener;
+
 import com.google.common.util.concurrent.MoreExecutors;
 
 /**
@@ -169,9 +170,28 @@ public class WalletController
 	 * @throws {@link InterruptedException}
 	 */
 	@SuppressWarnings("deprecation")
-	public void sendBitcoin(String address, String amount) 
+	public boolean sendBitcoin(PeerGroup peers, String address, String amount) 
 				throws InsufficientMoneyException, ExecutionException, InterruptedException {
 		Address destinationAddress = Address.fromBase58(params, address);
+		Wallet.SendResult result = this.wallet.sendCoins(peers, destinationAddress, Coin.parseCoin(amount));
+		if(result != null) {
+			result.broadcastComplete.get();
+			result.broadcastComplete.addListener(() -> {
+				System.out.println("Coins were sent. Transaction hash: " + result.tx.getHashAsString());
+				}, MoreExecutors.sameThreadExecutor());
+			return true;
+		}
+		else {
+			System.out.println("Something went wrong sending the money.");
+			return false;
+		}
+		
+		/*********************
+		 * Using the following code caused bitcoins to be sent to a second address.
+		 * The cause of this has to be figured out.
+		 * -Frank
+		 *********************/
+		/*Address destinationAddress = Address.fromBase58(params, address);
 		SendRequest request = SendRequest.to(destinationAddress, Coin.MILLICOIN);
 		SendResult result = wallet.sendCoins(request);
 		result.broadcastComplete.addListener(() -> {
@@ -180,7 +200,7 @@ public class WalletController
 		if(result != null) {
 			result.broadcastComplete.get();
 			System.out.println("The money was sent!");
-		}
+		} */
 	}
 	
 	/**

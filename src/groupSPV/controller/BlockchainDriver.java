@@ -1,11 +1,11 @@
 package groupSPV.controller;
-
 import java.io.File;
 
 import org.bitcoinj.utils.BriefLogFormatter;
 
 import groupSPV.model.CustomKit;
-import groupSPV.view.CommandLineDisplay;
+import groupSPV.model.CustomNBBL;
+import groupSPV.view.BlockchainGUI;
 
 /** BlockchainDriver is a driver class to initiate the downloading the Blockchain and display it.
 *
@@ -17,25 +17,28 @@ public class BlockchainDriver {
 
 	/** Default save location for any OS. */
 	private static final String saveLocation = getSystemPath() + "SeniorProject_Bitcoin_Client\\";
-
+	
 	/** Main method.
 	 * @param args Argument stating "testnet" will use Bitcoin Test network. */
 	public static void main(String[] args) {
 		BriefLogFormatter.init(); // Sets logging format, default for now
-
-		CustomKit kit = new CustomKit(new File(saveLocation));
+		
+		CustomKit kit = new CustomKit(CustomKit.MAINNET, new File(saveLocation));
 		
 		if (args.length > 0 && args[0].equals("testnet")) {
 			System.out.println("TestNet in use.");
 			kit = new CustomKit(CustomKit.TESTNET, new File(saveLocation + "test\\"));
 		}
-
+		
 		System.out.println("Downloading in progress...");
 		kit.startAndWait();
 		System.out.println("Downloading complete. Current height: " + kit.getHeight());
 		
-		CommandLineDisplay cld = new CommandLineDisplay(kit);
-		cld.display(5);
+		BlockchainGUI bcGUI = new BlockchainGUI(kit);
+		kit.addNewBestBlockListener(new CustomNBBL(bcGUI));
+		
+		WalletController wc = kit.getWalletController();
+		// TODO Integrate Wallet GUI here (Or with BlockchainGUI if combined)
 	}
 	
 	/** Returns User's full 'AppData' path if Windows, blank string if not.

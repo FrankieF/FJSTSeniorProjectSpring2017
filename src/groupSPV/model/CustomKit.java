@@ -1,13 +1,14 @@
 package groupSPV.model;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.bitcoinj.core.Block;
 import org.bitcoinj.core.BlockChain;
-import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Peer;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.StoredBlock;
@@ -17,6 +18,8 @@ import org.bitcoinj.kits.WalletAppKit;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.params.TestNet3Params;
 import org.bitcoinj.store.BlockStore;
+
+import groupSPV.controller.WalletController;
 
 /** CustomKit is a "Facade" class to the bitcoinj WalletAppKit class.
  * It simplifies working with the WalletAppKit class for our specific project needs.
@@ -29,6 +32,8 @@ public class CustomKit {
 
 	/** WalletAppKit object to simplify. */
 	private WalletAppKit wak;
+	
+	private WalletController wc;
 	
 	/** List of all current NewBestBlockListeners. */
 	private List<NewBestBlockListener> newBestBlockListeners = new ArrayList<NewBestBlockListener>();
@@ -64,19 +69,12 @@ public class CustomKit {
 		else
 			wak = new WalletAppKit(MainNetParams.get(), saveLocation, defaultFilePrefix);
 	}
-
-	/** Constructor for creating a CustomKit using particular bitcoinj parameters.
-	 * @param params NetworkParameters to use.
-	 * @param saveLocation File object of folder location to save client files.
-	 * @param filePrefix File prefix needed for WalletAppKit. */
-	protected CustomKit(NetworkParameters params, File saveLocation, String filePrefix) {
-		wak = new WalletAppKit(params, saveLocation, filePrefix);
-	}
 	
 	/** Starts downloading of Blockchain, holds until fully downloaded. */
 	public void startAndWait() {
 		wak.startAsync(); // Start WAK
 		wak.awaitRunning(); // Wait for WAK to fully start
+		wc = new WalletController(wak.wallet());
 	}
 	
 	/** Stops synchronizing processes, holds until fully stopped. */
@@ -111,6 +109,12 @@ public class CustomKit {
 	 * @return BlockStore. */
 	public BlockStore getBlockStore() {
 		return getBlockChain().getBlockStore();
+	}
+	
+	/** Returns the WalletController. Null if CustomKit is not started.
+	 * @return WalletController. */
+	public WalletController getWalletController() {
+		return wc;
 	}
 	
 	/* -----------------------
@@ -190,5 +194,22 @@ public class CustomKit {
 	 * @throws ExecutionException Thrown if error arises. */
 	public Block getFullBlock(Sha256Hash blockHash) throws InterruptedException, ExecutionException {
 		return getFullBlock(getConnectedPeer(), blockHash);
+	}
+	
+	/** Returns Version of StoredBlock on disk.
+	 * @param block block that is in question
+	 * @return String Version of the BlockStore. */
+	public String getBlockStoreVersion(StoredBlock block) {
+		String[] info = block.toString().split("\\r?\\n");
+		return info[2].split(":")[1];
+	}
+	
+	/** Returns Vervion of StoredBlock on disk.
+	 * @param block block that is in question.
+	 * @return String Time of the BlockStore. */
+	public String getBlockStoreTime(StoredBlock block) {
+		String[] info = block.toString().split("\\r?\\n");
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(Integer.valueOf(info[5].
+				substring(info[5].indexOf(':') + 1, info[5].indexOf('(')).trim()) * 1000L));
 	}
 }
