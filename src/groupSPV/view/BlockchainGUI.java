@@ -42,6 +42,7 @@ public class BlockchainGUI extends JFrame {
 		scrollPane = new JScrollPane(table);
 		getContentPane().add(scrollPane);
 		
+		// TODO Remove this button, not needed with CustomNBBL.java -James
 		btnNewButton = new JButton("Update Table");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -62,7 +63,14 @@ public class BlockchainGUI extends JFrame {
 		
 		springLayout.putConstraint(SpringLayout.SOUTH, btnNewButton, -10, SpringLayout.SOUTH, getContentPane());
 		springLayout.putConstraint(SpringLayout.EAST, btnNewButton, 0, SpringLayout.EAST, scrollPane);
-			
+		
+		try {
+			updateTable(); // Initial call to populate table
+		} catch (BlockStoreException bse) {
+			System.err.println(bse.getMessage());
+		} 
+		
+		setVisible(true);
 	}
 	
 	/**
@@ -71,12 +79,12 @@ public class BlockchainGUI extends JFrame {
 	 * @param JTable table
 	 * @throws BlockStoreException 
 	 */
-	private void updateTable() throws BlockStoreException{
+	public void updateTable() throws BlockStoreException{
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		model.setRowCount(0);
 		StoredBlock working = kit.getChainHead();
 		StoredBlock previous = working.getPrev(kit.getBlockStore());
-		for(int i = 0; i < 20; i++){
+		for(int i = 0; i < 200; i++){
 			kit.getBlockStoreVersion(working);
 			Object[] row = {Integer.toString(working.getHeight()),working.getHeader().getHashAsString(),
 					kit.getBlockStoreTime(working).trim(),kit.getBlockStoreVersion(working).trim()};

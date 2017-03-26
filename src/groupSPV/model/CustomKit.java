@@ -68,7 +68,6 @@ public class CustomKit {
 			wak = new WalletAppKit(TestNet3Params.get(), saveLocation, testFilePrefix);
 		else
 			wak = new WalletAppKit(MainNetParams.get(), saveLocation, defaultFilePrefix);
-		wc = new WalletController(wak.wallet());
 	}
 	
 	
@@ -80,6 +79,7 @@ public class CustomKit {
 	public void startAndWait() {
 		wak.startAsync(); // Start WAK
 		wak.awaitRunning(); // Wait for WAK to fully start
+		wc = new WalletController(wak.wallet());
 	}
 	
 	/** Stops synchronizing processes, holds until fully stopped. */
