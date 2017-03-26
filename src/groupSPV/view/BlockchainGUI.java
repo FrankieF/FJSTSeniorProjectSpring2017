@@ -74,10 +74,8 @@ public class BlockchainGUI extends JFrame {
 	}
 	
 	/**
-	 * Updates table with given map from query and table
-	 * @param Map<Item, Inventory> map
-	 * @param JTable table
-	 * @throws BlockStoreException 
+	 * Updates table
+	 * @throws BlockStoreException
 	 */
 	public void updateTable() throws BlockStoreException{
 		DefaultTableModel model = (DefaultTableModel) table.getModel();

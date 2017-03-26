@@ -70,11 +70,6 @@ public class CustomKit {
 			wak = new WalletAppKit(MainNetParams.get(), saveLocation, defaultFilePrefix);
 	}
 	
-	
-	public WalletController getWalletController() {
-		return wc;
-	}
-	
 	/** Starts downloading of Blockchain, holds until fully downloaded. */
 	public void startAndWait() {
 		wak.startAsync(); // Start WAK
@@ -114,6 +109,12 @@ public class CustomKit {
 	 * @return BlockStore. */
 	public BlockStore getBlockStore() {
 		return getBlockChain().getBlockStore();
+	}
+	
+	/** Returns the WalletController. Null if CustomKit is not started.
+	 * @return WalletController. */
+	public WalletController getWalletController() {
+		return wc;
 	}
 	
 	/* -----------------------
@@ -196,7 +197,7 @@ public class CustomKit {
 	}
 	
 	/** Returns Version of StoredBlock on disk.
-	 * @param StoredBlock block that is in question
+	 * @param block block that is in question
 	 * @return String Version of the BlockStore. */
 	public String getBlockStoreVersion(StoredBlock block) {
 		String[] info = block.toString().split("\\r?\\n");
@@ -204,8 +205,7 @@ public class CustomKit {
 	}
 	
 	/** Returns Vervion of StoredBlock on disk.
-	 * @param StoredBlock block that is in question
-	 * @return 
+	 * @param block block that is in question.
 	 * @return String Time of the BlockStore. */
 	public String getBlockStoreTime(StoredBlock block) {
 		String[] info = block.toString().split("\\r?\\n");
