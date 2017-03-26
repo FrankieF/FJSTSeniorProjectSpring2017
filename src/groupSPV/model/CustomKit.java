@@ -9,7 +9,6 @@ import java.util.concurrent.ExecutionException;
 
 import org.bitcoinj.core.Block;
 import org.bitcoinj.core.BlockChain;
-import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Peer;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.StoredBlock;
@@ -19,6 +18,8 @@ import org.bitcoinj.kits.WalletAppKit;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.params.TestNet3Params;
 import org.bitcoinj.store.BlockStore;
+
+import groupSPV.controller.WalletController;
 
 /** CustomKit is a "Facade" class to the bitcoinj WalletAppKit class.
  * It simplifies working with the WalletAppKit class for our specific project needs.
@@ -31,6 +32,8 @@ public class CustomKit {
 
 	/** WalletAppKit object to simplify. */
 	private WalletAppKit wak;
+	
+	private WalletController wc;
 	
 	/** List of all current NewBestBlockListeners. */
 	private List<NewBestBlockListener> newBestBlockListeners = new ArrayList<NewBestBlockListener>();
@@ -65,21 +68,12 @@ public class CustomKit {
 			wak = new WalletAppKit(TestNet3Params.get(), saveLocation, testFilePrefix);
 		else
 			wak = new WalletAppKit(MainNetParams.get(), saveLocation, defaultFilePrefix);
-	}
-
-	/** Constructor for creating a CustomKit using particular bitcoinj parameters.
-	 * @param params NetworkParameters to use.
-	 * @param saveLocation File object of folder location to save client files.
-	 * @param filePrefix File prefix needed for WalletAppKit. */
-	protected CustomKit(NetworkParameters params, File saveLocation, String filePrefix) {
-		wak = new WalletAppKit(params, saveLocation, filePrefix);
+		wc = new WalletController(wak.wallet());
 	}
 	
-	/***
-	 * @return The wallet app kit.
-	 */
-	public WalletAppKit getWalletAppKit() {
-		return this.wak;
+	
+	public WalletController getWalletController() {
+		return wc;
 	}
 	
 	/** Starts downloading of Blockchain, holds until fully downloaded. */

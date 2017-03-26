@@ -1,81 +1,57 @@
 package groupSPV.view;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.SpringLayout;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SpringLayout;
 import javax.swing.table.DefaultTableModel;
 
 import org.bitcoinj.core.StoredBlock;
 import org.bitcoinj.store.BlockStoreException;
 
-import groupSPV.controller.BlockchainDriver;
 import groupSPV.model.CustomKit;
-
-import javax.swing.JButton;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class BlockchainGUI extends JFrame {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private JTable table;
 	private JScrollPane scrollPane;
-	private BlockchainDriver driver;
 	private JButton btnNewButton;
+	private CustomKit kit;
 	
-	public BlockchainGUI() {
+	public BlockchainGUI(CustomKit kit) {
 		super("Blockchain");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		SpringLayout springLayout = new SpringLayout();
 		getContentPane().setLayout(springLayout);
-		
-		/**Added String [] to constructor to specify testnet**/
-		driver = new BlockchainDriver(new String [] {"testnet"});
+		this.kit = kit;
 		
 		table = new JTable();
-		table.setModel(new DefaultTableModel(
-			new Object[][] {
-			},
-			new String[] {
-				"Block", "Hash", "Time", "Version"
-			}
-		) {
-			/**
-			 * 
-			 */
+		table.setModel(new DefaultTableModel(new Object[][] {},
+			new String[] {"Block", "Hash", "Time", "Version"}) {
 			private static final long serialVersionUID = 1L;
-			boolean[] columnEditables = new boolean[] {
-				false, false, false, false
-			};
 			public boolean isCellEditable(int row, int column) {
-				return columnEditables[column];
+				return false;
 			}
 		});
 		scrollPane = new JScrollPane(table);
 		getContentPane().add(scrollPane);
 		
-		
 		btnNewButton = new JButton("Update Table");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				//Need to add some type of waiting feature
-				CustomKit kit = driver.getKit();
-				/** Commented out because method is called in BlockchainDriver Constructor - Frank **/
-				//kit.startAndWait();
 				try {
-					updateTable(table, kit);
+					updateTable();
 				} catch (BlockStoreException e) {
 					e.printStackTrace();
 				}
 			}
 		});
-		
 		
 		getContentPane().add(btnNewButton);
 		
@@ -95,7 +71,7 @@ public class BlockchainGUI extends JFrame {
 	 * @param JTable table
 	 * @throws BlockStoreException 
 	 */
-	private static void updateTable(JTable table, CustomKit kit) throws BlockStoreException{
+	private void updateTable() throws BlockStoreException{
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		model.setRowCount(0);
 		StoredBlock working = kit.getChainHead();

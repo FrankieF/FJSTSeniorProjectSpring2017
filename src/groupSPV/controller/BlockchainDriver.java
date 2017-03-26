@@ -1,8 +1,9 @@
 package groupSPV.controller;
 import java.io.File;
+
 import org.bitcoinj.utils.BriefLogFormatter;
+
 import groupSPV.model.CustomKit;
-import groupSPV.view.CommandLineDisplay;
 
 /** BlockchainDriver is a driver class to initiate the downloading the Blockchain and display it.
 *
@@ -31,17 +32,9 @@ public class BlockchainDriver {
 		kit.startAndWait();
 		System.out.println("Downloading complete. Current height: " + kit.getHeight());
 		
-		CommandLineDisplay cld = new CommandLineDisplay(kit);
-		cld.display(5);
-		wc = new WalletController(kit.getWalletAppKit().wallet());
-
-	}
-	
-	/***
-	 * @return The CustomKit object.
-	 */
-	public CustomKit getKit(){
-		return kit;
+		// TODO integrate Trevor's GUI
+		
+		wc = kit.getWalletController();
 	}
 
 	/***
