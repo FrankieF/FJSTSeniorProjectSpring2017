@@ -12,8 +12,11 @@ import javax.swing.table.DefaultTableModel;
 
 import org.bitcoinj.core.StoredBlock;
 import org.bitcoinj.store.BlockStoreException;
+import org.bitcoinj.wallet.Wallet.BalanceType;
 
 import groupSPV.model.CustomKit;
+import javafx.application.Application;
+import javafx.stage.Stage;
 
 public class BlockchainGUI extends JFrame {
 	
@@ -63,6 +66,19 @@ public class BlockchainGUI extends JFrame {
 		
 		springLayout.putConstraint(SpringLayout.SOUTH, btnNewButton, -10, SpringLayout.SOUTH, getContentPane());
 		springLayout.putConstraint(SpringLayout.EAST, btnNewButton, 0, SpringLayout.EAST, scrollPane);
+		
+		JButton btnOpenWallet = new JButton("Open wallet");
+		btnOpenWallet.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Login.launch(Login.class);
+				Login.setWalletController(kit.getWalletController());
+				//WalletGUI wallet = new WalletGUI(kit.getWalletController());
+				//wallet.setVisible(true);
+			}
+		});
+		springLayout.putConstraint(SpringLayout.NORTH, btnOpenWallet, 10, SpringLayout.NORTH, getContentPane());
+		springLayout.putConstraint(SpringLayout.EAST, btnOpenWallet, -10, SpringLayout.EAST, getContentPane());
+		getContentPane().add(btnOpenWallet);
 		
 		try {
 			updateTable(); // Initial call to populate table
