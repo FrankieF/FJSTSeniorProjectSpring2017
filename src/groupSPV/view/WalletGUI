@@ -1,0 +1,94 @@
+package groupSPV.view;
+
+import java.util.Iterator;
+
+import javax.swing.JFrame;
+import javax.swing.SpringLayout;
+import javax.swing.table.DefaultTableModel;
+
+import org.bitcoinj.core.ECKey;
+import org.bitcoinj.store.BlockStoreException;
+import org.bitcoinj.wallet.Wallet.BalanceType;
+
+import groupSPV.controller.WalletController;
+
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+
+public class WalletGUI extends JFrame{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private WalletController wc;
+	private JTable table;
+	private JScrollPane scrollPane;
+	
+	public WalletGUI(WalletController walletController){
+		super("Wallet");
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		SpringLayout springLayout = new SpringLayout();
+		getContentPane().setLayout(springLayout);
+		setBounds(400, 400, 600, 443);
+		
+		wc = walletController;
+		
+		JLabel lblCurrentBalance = new JLabel("Current Balance:");
+		getContentPane().add(lblCurrentBalance);
+		
+		JLabel lblCurrentBalanceAmount = new JLabel(wc.getBalance(BalanceType.AVAILABLE).toFriendlyString());
+		getContentPane().add(lblCurrentBalanceAmount);
+		
+		JLabel lblBitcoinValue = new JLabel("Bitcoin Value:");
+		getContentPane().add(lblBitcoinValue);
+		
+		JLabel lblBitcoinValueAmount = new JLabel("$989.14");
+		getContentPane().add(lblBitcoinValueAmount);
+		
+		table = new JTable();
+		table.setModel(new DefaultTableModel(new Object[][] {},
+			new String[] {"Keys"}) {
+			private static final long serialVersionUID = 1L;
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		});
+		scrollPane = new JScrollPane(table);
+		getContentPane().add(scrollPane);
+		updateTable();
+		
+		springLayout.putConstraint(SpringLayout.NORTH, lblCurrentBalance, 31, SpringLayout.NORTH, getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, lblCurrentBalance, 23, SpringLayout.WEST, getContentPane());
+		
+		springLayout.putConstraint(SpringLayout.NORTH, lblCurrentBalanceAmount, 0, SpringLayout.NORTH, lblCurrentBalance);
+		springLayout.putConstraint(SpringLayout.WEST, lblCurrentBalanceAmount, 6, SpringLayout.EAST, lblCurrentBalance);
+
+		springLayout.putConstraint(SpringLayout.NORTH, lblBitcoinValue, 12, SpringLayout.SOUTH, lblCurrentBalance);
+		springLayout.putConstraint(SpringLayout.WEST, lblBitcoinValue, 0, SpringLayout.WEST, lblCurrentBalance);
+
+		springLayout.putConstraint(SpringLayout.WEST, lblBitcoinValueAmount, 21, SpringLayout.EAST, lblBitcoinValue);
+		springLayout.putConstraint(SpringLayout.SOUTH, lblBitcoinValueAmount, 0, SpringLayout.SOUTH, lblBitcoinValue);
+		
+		springLayout.putConstraint(SpringLayout.NORTH, scrollPane, 57, SpringLayout.SOUTH, lblBitcoinValue);
+		springLayout.putConstraint(SpringLayout.WEST, scrollPane, 0, SpringLayout.WEST, lblCurrentBalance);
+		springLayout.putConstraint(SpringLayout.SOUTH, scrollPane, -127, SpringLayout.SOUTH, getContentPane());
+		springLayout.putConstraint(SpringLayout.EAST, scrollPane, 0, SpringLayout.EAST, lblBitcoinValueAmount);
+	}
+	
+	/**
+	 * Updates table
+	 * @throws BlockStoreException
+	 */
+	public void updateTable(){
+		DefaultTableModel model = (DefaultTableModel) table.getModel();
+		model.setRowCount(0);
+		Iterator<ECKey> it = wc.getKeys().iterator();
+		
+		while(it.hasNext()){
+			Object[] row = {it.next().toString()};
+			model.addRow(row);
+		}
+	}
+}
