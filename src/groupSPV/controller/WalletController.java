@@ -3,13 +3,18 @@ package groupSPV.controller;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
+import javax.swing.JOptionPane;
+
 import org.bitcoinj.core.*;
 import org.bitcoinj.wallet.SendRequest;
 import org.bitcoinj.wallet.Wallet;
+import org.bitcoinj.wallet.Wallet.BalanceType;
 import org.bitcoinj.wallet.Wallet.SendResult;
 import org.bitcoinj.wallet.listeners.WalletCoinsSentEventListener;
 
 import com.google.common.util.concurrent.MoreExecutors;
+
+import groupSPV.view.WalletGUI;
 
 /**
  * @author Frankie Fasola
@@ -88,6 +93,14 @@ public class WalletController
 	 */
 	public List<Transaction> getTransactions() {
 		return this.wallet.getTransactionsByTime();
+	}
+	
+	/***
+	 * @author Francis Fasola
+	 * @return The pending transactions in the wallet.
+	 */
+	public Collection<Transaction> getPendingTransactions() {
+		return this.wallet.getPendingTransactions();
 	}
 	
 	/***
@@ -212,8 +225,9 @@ public class WalletController
 			
 			@Override
 			public void onCoinsSent(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance) {
-				System.out.println("****** COINS SENT ******");
-				System.out.println("RECEIVED: " + tx.getValue(wallet) + " . NEW BALANCE: " + wallet.getBalance());				
+				JOptionPane.showMessageDialog(null, "RECEIVED: " + tx.getValue(wallet).toFriendlyString() + " . NEW BALANCE: " 
+						+ wallet.getBalance().toFriendlyString(), "****** COINS SENT ******", JOptionPane.OK_OPTION);	
+				WalletGUI.lblCurrentBalanceAmount.setText(wallet.getBalance(BalanceType.AVAILABLE).toFriendlyString());
 			}
 		});
 		// 			onTransactionConfidenceChanged(Wallet wallet, Transaction tx)

@@ -1,7 +1,10 @@
 package groupSPV.controller;
 import java.io.File;
 
+import org.bitcoinj.core.ECKey;
+import org.bitcoinj.params.TestNet3Params;
 import org.bitcoinj.utils.BriefLogFormatter;
+import org.bitcoinj.wallet.Wallet.BalanceType;
 
 import groupSPV.model.CustomKit;
 import groupSPV.model.CustomNBBL;
@@ -23,13 +26,13 @@ public class BlockchainDriver {
 	public static void main(String[] args) {
 		BriefLogFormatter.init(); // Sets logging format, default for now
 		
-		CustomKit kit = new CustomKit(CustomKit.MAINNET, new File(saveLocation));
+		//CustomKit kit = new CustomKit(CustomKit.MAINNET, new File(saveLocation));
 		
 		if (args.length > 0 && args[0].equals("testnet")) {
 			System.out.println("TestNet in use.");
-			kit = new CustomKit(CustomKit.TESTNET, new File(saveLocation + "test\\"));
+			//kit = new CustomKit(CustomKit.TESTNET, new File(saveLocation + "test\\"));
 		}
-		
+		CustomKit kit = new CustomKit(CustomKit.TESTNET, new File(saveLocation + "test\\"));
 		System.out.println("Downloading in progress...");
 		kit.startAndWait();
 		System.out.println("Downloading complete. Current height: " + kit.getHeight());
@@ -38,6 +41,14 @@ public class BlockchainDriver {
 		kit.addNewBestBlockListener(new CustomNBBL(bcGUI));
 		
 		WalletController wc = kit.getWalletController();
+		System.out.println("Balance: " + wc.getBalance(null).toFriendlyString());
+		System.out.println("Available : " + wc.getBalance(BalanceType.AVAILABLE).toFriendlyString());
+		System.out.println("Estimated: " + wc.getBalance(BalanceType.ESTIMATED).toFriendlyString());
+		System.out.println("Estimated spendable: " + wc.getBalance(BalanceType.ESTIMATED_SPENDABLE).toFriendlyString());
+//		try {
+//			wc.sendBitcoin("mrJMoMskRKXm3YxyR6koBbggqb2KcfTsRY", ".5");
+//			System.out.println("Sent successfully");
+//		} catch (Exception e) { System.out.println(":("); e.printStackTrace();}
 		// TODO Integrate Wallet GUI here (Or with BlockchainGUI if combined)
 	}
 	

@@ -23,7 +23,6 @@ public class CustomNBBL implements NewBestBlockListener {
 
 	@Override
 	public void notifyNewBestBlock(StoredBlock block) throws VerificationException {
-		System.out.println("New Block");
 		try {
 			bcg.updateTable();
 		} catch (BlockStoreException e) {
