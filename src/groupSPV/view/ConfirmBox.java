@@ -16,6 +16,8 @@ public class ConfirmBox {
 	
 	static boolean answer;
 	
+	// TODO Remove and fix all these warnings.
+	@SuppressWarnings("restriction")
 	public static boolean display(String title, String message) {
 		Stage window = new Stage();
 		window.initModality(Modality.APPLICATION_MODAL);

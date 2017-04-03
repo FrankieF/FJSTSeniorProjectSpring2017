@@ -16,13 +16,11 @@ import com.google.common.util.concurrent.MoreExecutors;
 
 import groupSPV.view.WalletGUI;
 
-/**
+/** Interfaces between the client and the wallet by wrapping the wallet methods.
  * @author Frankie Fasola
  * @author James Donnell
  * @author Spencer Escalante
- * @author Trevor Silva
- * Interfaces between the client and the wallet by wrapping the wallet methods.
- */
+ * @author Trevor Silva */
 public class WalletController
 {
 	private Wallet wallet;

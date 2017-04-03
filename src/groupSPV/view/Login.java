@@ -1,13 +1,11 @@
 package groupSPV.view;
 
-import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import static javafx.geometry.HPos.RIGHT;
 
 import org.bitcoinj.wallet.Wallet.BalanceType;
 
 import groupSPV.controller.WalletController;
+import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -20,6 +18,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+// TODO Remove and fix all these warnings.
+@SuppressWarnings("restriction")
 public class Login extends Application {
     static Stage window;
     Scene loginWindow, infoWindow;
