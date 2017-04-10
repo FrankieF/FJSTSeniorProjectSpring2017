@@ -5,14 +5,20 @@ package groupSPV.view;
  */
 
 
-import javafx.application.Application;
 import static javafx.geometry.HPos.RIGHT;
+
+import java.util.HashMap;
+
+import org.bitcoinj.params.TestNet3Params;
+import org.bitcoinj.wallet.Wallet;
+import org.bitcoinj.wallet.Wallet.BalanceType;
+
+import groupSPV.controller.WalletController;
+import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ScrollPane;
@@ -21,14 +27,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import java.util.HashMap;
 
-import org.bitcoinj.params.TestNet3Params;
-import org.bitcoinj.wallet.Wallet;
-import org.bitcoinj.wallet.Wallet.BalanceType;
-
-import groupSPV.controller.WalletController;
-
+@SuppressWarnings("restriction")
 public class Login extends Application {
    private Stage window;
    private Scene loginWindow, infoWindow;
@@ -36,7 +36,7 @@ public class Login extends Application {
    private WalletController wc = new WalletController (new Wallet(TestNet3Params.get()));
    private HashMap <String,String> users = new HashMap<String, String>();
     
-    @Override
+	@Override
     public void start(Stage primaryStage) {
         window = primaryStage;
         name = "";
@@ -257,5 +257,4 @@ public class Login extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-
 }

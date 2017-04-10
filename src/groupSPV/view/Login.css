@@ -19,7 +19,7 @@ and open the template in the editor.
 }
 
 .button {
-    -fx-text-fill: while;
+    -fx-text-fill: white;
     -fx-font-family: "Arial Narrow";
     -fx-font-weight: bold;
     -fx-background-color: linear-gradient(#61a2b1, #2A5058);
@@ -40,5 +40,5 @@ and open the template in the editor.
 actiontarget{
     -fx-fill: FIREBRICK;
     -fx-front-weight: bold;
-    -fx-effecr: dropshadow( gaussin , rgba(255,255,255,0.5) , 0,0,0,1);
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.5), 0, 0, 0, 1);
 }
