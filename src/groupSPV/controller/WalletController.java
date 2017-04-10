@@ -1,6 +1,14 @@
 package groupSPV.controller;
 
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.JOptionPane;
@@ -14,26 +22,38 @@ import org.bitcoinj.wallet.listeners.WalletCoinsSentEventListener;
 
 import com.google.common.util.concurrent.MoreExecutors;
 
+import groupSPV.model.Friend;
 import groupSPV.view.WalletGUI;
 
-/** Interfaces between the client and the wallet by wrapping the wallet methods.
+/**
  * @author Frankie Fasola
  * @author James Donnell
  * @author Spencer Escalante
- * @author Trevor Silva */
+ * @author Trevor Silva
+ * Interfaces between the client and the wallet by wrapping the wallet methods.
+ */
 public class WalletController
 {
 	private Wallet wallet;
 	private NetworkParameters params;
-
+	private User user;
+	protected static final String path = groupSPV.Utils.getSystemPath() + "\\SeniorProject_Bitcoin_Client\\friends.ser";
+	
 	/***
 	 * @author Francis Fasola
 	 * Constructs a new wallet controller object.
 	 * @param params The network the wallet runs on.
+	 * @throws Exception 
+	 * @throws IOException 
 	 */
 	public WalletController (Wallet wallet) {
 		this.wallet = wallet;
 		params = wallet.getParams();
+		try  {
+			loadUser();
+		} catch (Exception e) {
+			user = new User("Frank","ff");
+		}
 		addEventListeners();
 	}
 	
@@ -144,7 +164,7 @@ public class WalletController
 	public void addExistingKeys(String... keys) {
 		for (String key : keys) {
 			DumpedPrivateKey _key = DumpedPrivateKey.fromBase58(params, key);
-			this.wallet.importKey(_key.getKey());
+			this.wallet.importKey(_key.getKey());	
 		}
 	}
 	
@@ -241,4 +261,74 @@ public class WalletController
 		});
 	}
 	
+	/***
+	 * Returns the list of Friend Objects for the user.
+	 * @author Francis Fasola
+	 * @return List of Friend Objects.
+	 */
+	public List<Friend> getFriendsKeys() {
+		return this.user.getFriendKeys();
+	}
+	
+	/***
+	 * Adds a key to the list of friend keys.
+	 * @author Francis Fasola
+	 * 
+	 * @param name Alias for the given key.
+	 * @param key Public key of the alias.
+	 */
+	public void addFriend(String name, String key) {
+		this.user.getFriendKeys().add(new Friend(name, key));
+	}
+	
+	/***
+	 * @author Francis Fasola
+	 * Loads the user into the WalletController.
+	 * 
+	 * @throws IOException If the file is not found.
+	 * @throws Exception Any other errors.
+	 */
+	public void loadUser () throws IOException, Exception {
+		try {
+			ObjectInputStream stream = new ObjectInputStream(new FileInputStream(path));
+			Object o = stream.readObject();
+			if (o instanceof User)
+				user = (User)o;
+			else {
+				stream.close();
+				throw new Exception("File does not contain friend key data!"); 
+			}
+			stream.close();
+		} catch (FileNotFoundException e) {
+			throw new IOException("ERROR with file.", e);
+		}catch (IOException e) {
+			e.printStackTrace();
+			throw new IOException("ERROR with file.", e);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("Unkown error; friendKeys not loaded.", e);
+		}
+	}
+	
+	/***
+	 * Saves the current user.
+	 * @author Francis Fasola
+	 * 
+	 * @throws IOException If the file path is not valid.
+	 * @throws Exception Any other exceptions.
+	 */
+	public void saveUser() throws IOException, Exception {		
+		File file = new File(path);
+		try {
+			ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(file));
+			stream.writeObject(user);
+			stream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new IOException("ERROR with file.", e);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("Unkown error; friendKeys not saved!", e);
+		}
+	}	
 }

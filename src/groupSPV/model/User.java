@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
+
+import groupSPV.model.Friend;
 
 /** User object for usernames and hashed passwords.
  * @author Frank Fasola
@@ -17,6 +20,8 @@ public class User implements Serializable {
 
 	/** Stored username and hashed password. */
 	private String username, hashedPassword;
+	
+	private List<Friend> friendKeys;
 	
 	/** Create a new user, store username and hash given password.
 	 * @param username Username.
@@ -35,15 +40,13 @@ public class User implements Serializable {
 		else return false; // Wrong password
 	}
 	
-	/** Return Username.
-	 * @return String. */
-	public String getUsername() {
-		return username;
-	}
-	
 	@Override
 	public String toString() {
 		return getUsername();
+	}
+	
+	public String getUsername() {
+		return this.username;
 	}
 	
 	/** Hash a password using Java SHA-256.
@@ -68,5 +71,20 @@ public class User implements Serializable {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	public List<Friend> getFriendKeys() {
+		return this.friendKeys;
+	}
+	
+	/***
+	 * Adds a key to the list of friend keys.
+	 * @author Francis Fasola
+	 * 
+	 * @param name Alias for the given key.
+	 * @param key Public key of the alias.
+	 */
+	public void addFriend(String name, String key) {
+		this.friendKeys.add(new Friend(name, key));
 	}
 }
