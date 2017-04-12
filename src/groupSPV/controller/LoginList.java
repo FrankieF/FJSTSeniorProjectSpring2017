@@ -8,6 +8,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
+import groupSPV.model.User;
+
 /** Used to manage active User objects.
  * @author Frank Fasola
  * @author James Donnell

@@ -35,7 +35,7 @@ public class BigCoin implements Comparable<BigCoin>, Comparator<BigCoin> {
 	
 	/** Creates a BigCoin with a Long. Long represents number of Satoshis.
 	 * @param longValue Long value */
-	protected BigCoin(Long longValue) {
+	public BigCoin(Long longValue) {
 		satoshi = new BigDecimal(longValue);
 	}
 	

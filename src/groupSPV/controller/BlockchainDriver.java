@@ -36,6 +36,10 @@ public class BlockchainDriver {
 		
 		/*LoginList.addUser("test", "test");
 		System.out.println(LoginList.verifyUser("test", "test1")); //Should fail with bad password*/
+		
+		/*ConversionRate.update(); // Must call update when you want to update. Value stored for multiple conversions.
+		BigCoin testCoins = new BigCoin(Long.parseLong("1000000000")); // 10 BTC
+		System.out.println(ConversionRate.convert(testCoins)); // 10 BTC to USD*/
 	}
 
 	/** Returns User's full 'AppData' path if Windows, blank string if not.

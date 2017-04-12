@@ -1,4 +1,4 @@
-package groupSPV.controller;
+package groupSPV.model;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;
