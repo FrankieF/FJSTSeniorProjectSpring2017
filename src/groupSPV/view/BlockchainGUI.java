@@ -64,15 +64,10 @@ public class BlockchainGUI extends JFrame {
 		springLayout.putConstraint(SpringLayout.SOUTH, btnNewButton, -10, SpringLayout.SOUTH, getContentPane());
 		springLayout.putConstraint(SpringLayout.EAST, btnNewButton, 0, SpringLayout.EAST, scrollPane);
 
-		JButton btnOpenWallet = new JButton("Open wallet");
+		JButton btnOpenWallet = new JButton("Wallet Login");
 		btnOpenWallet.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				new WalletGUI(kit.getWalletController());
-
-				/*Login.launch(Login.class);
-				Login.setWalletController(kit.getWalletController());
-				WalletGUI wallet = new WalletGUI(kit.getWalletController());
-				wallet.setVisible(true);*/
+				new WalletLoginGUI(kit.getWalletController());
 			}
 		});
 		springLayout.putConstraint(SpringLayout.NORTH, btnOpenWallet, 10, SpringLayout.NORTH, getContentPane());
