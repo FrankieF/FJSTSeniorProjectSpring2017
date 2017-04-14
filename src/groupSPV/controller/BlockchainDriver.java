@@ -5,8 +5,7 @@ import java.io.File;
 import org.bitcoinj.utils.BriefLogFormatter;
 
 import groupSPV.model.CustomKit;
-import groupSPV.model.CustomNBBL;
-import groupSPV.view.BlockchainGUI;
+import groupSPV.view.LoginGUI;
 
 /** BlockchainDriver is a driver class to initiate the downloading the Blockchain and display it.
  * @author Frank Fasola
@@ -15,27 +14,32 @@ import groupSPV.view.BlockchainGUI;
  * @author Trevor Silva */
 public class BlockchainDriver {
 
-	/** Default save location for any OS. */
-	protected static final String saveLocation = getSystemPath() + "SeniorProject_Bitcoin_Client\\";
+	/** Default save location for any OS on a particular Bitcoin Network. */
+	protected static String networkSaveLocation = getSystemPath() + "SeniorProject_Bitcoin_Client\\";
+	
+	protected static int currentNetwork;
+	
+	/** Default TestNet Folder. */
+	private static final String testNetFolder = "test\\";
 
 	/** Main method.
 	 * @param args Argument stating "testnet" will use Bitcoin Test network. */
 	public static void main(String[] args) {
 		BriefLogFormatter.init(); // Sets logging format, default for now
 
-		CustomKit kit = new CustomKit(CustomKit.MAINNET, new File(saveLocation));
+		currentNetwork = CustomKit.MAINNET;
+		
 		if (args.length > 0 && args[0].equals("testnet")) {
-			System.out.println("TestNet in use.");
-			kit = new CustomKit(CustomKit.TESTNET, new File(saveLocation + "test\\"));
+			System.out.println("TESTNET IN USE!!!");
+			networkSaveLocation += testNetFolder;
+			currentNetwork = CustomKit.TESTNET;
 		}
 		
-		kit.startAndWait();
-
-		BlockchainGUI bcGUI = new BlockchainGUI(kit);
-		kit.addNewBestBlockListener(new CustomNBBL(bcGUI));
+		File tmpFile = new File(networkSaveLocation);
+		if(!tmpFile.exists())
+			tmpFile.mkdirs();
 		
-		/*LoginList.addUser("test", "test");
-		System.out.println(LoginList.verifyUser("test", "test1")); //Should fail with bad password*/
+		new LoginGUI();
 		
 		/*ConversionRate.update(); // Must call update when you want to update. Value stored for multiple conversions.
 		BigCoin testCoins = new BigCoin(Long.parseLong("1000000000")); // 10 BTC
@@ -45,10 +49,9 @@ public class BlockchainDriver {
 	/** Returns User's full 'AppData' path if Windows, blank string if not.
 	 *  @return 'AppData' full path. */
 	private static String getSystemPath() {
-		if (System.getenv("appdata") == null) {
-			return "";
-		} else {
-			return System.getenv("appdata") + "\\";
-		}
+		String appData = System.getenv("appdata");
+		
+		if (appData == null) return "";
+		return appData + "\\";
 	}
 }

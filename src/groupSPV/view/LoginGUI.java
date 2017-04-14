@@ -14,15 +14,15 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 
+import groupSPV.controller.AfterLogin;
 import groupSPV.controller.LoginList;
-import groupSPV.controller.WalletController;
 import groupSPV.model.User;
 
 /**
  *
  * @author Spencer
  */
-public class WalletLoginGUI extends JFrame {
+public class LoginGUI extends JFrame {
 
 	private static final long serialVersionUID = -251358090366870208L;
 	
@@ -34,14 +34,12 @@ public class WalletLoginGUI extends JFrame {
 	private JTextField userField;
 	private JButton loginBtn;
 	private JButton registerBtn;
-	private WalletController wc;
 
 	// End of variables declaration
 	/**
 	 * Creates new form WalletLoginGUI
 	 */
-	public WalletLoginGUI(WalletController wc) {
-		this.wc = wc;
+	public LoginGUI() {
 		/* Set Nimbus look and feel. */
 		try {
 			for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -51,7 +49,7 @@ public class WalletLoginGUI extends JFrame {
 				}
 			}
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException exception) {
-			java.util.logging.Logger.getLogger(WalletLoginGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, exception);
+			java.util.logging.Logger.getLogger(LoginGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, exception);
 		}
 		initComponents();
 		setVisible(true);
@@ -143,10 +141,8 @@ public class WalletLoginGUI extends JFrame {
 	private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {
 		User user;
 		if((user = LoginList.verifyUser(userField.getText(), new String(passwordField.getPassword()))) != null) {
-			// User is verified, no actions for different users. Just a single WalletGUI for any registered user.
-			System.out.println(user);
-			new WalletGUI(wc);
 			this.dispose();
+			AfterLogin.startGUI(user);
 		}
 	}
 

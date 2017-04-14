@@ -49,7 +49,7 @@ public class RegisterGUI extends JFrame {
 				}
 			}
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException exception) {
-			java.util.logging.Logger.getLogger(WalletLoginGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, exception);
+			java.util.logging.Logger.getLogger(LoginGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, exception);
 		}
 		initComponents();
 		setVisible(true);

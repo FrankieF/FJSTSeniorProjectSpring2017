@@ -18,7 +18,7 @@ import groupSPV.model.User;
 public class LoginList {
 
 	/** Save file for Users ArrayList. */
-	private static final String saveFile = BlockchainDriver.saveLocation + "loginList.ser";
+	private static final String saveFile = BlockchainDriver.networkSaveLocation + "loginList.ser";
 
 	/** ArrayList of Users. */
 	protected static ArrayList<User> users;
@@ -68,7 +68,7 @@ public class LoginList {
 			out.close();
 			fileOut.close();
 		} catch (FileNotFoundException fnfe) {
-			System.err.println(fnfe.getMessage());
+			System.err.println("FNFE" + fnfe.getMessage());
 		} catch (IOException ioe) {
 			System.err.println(ioe.getMessage());
 		}

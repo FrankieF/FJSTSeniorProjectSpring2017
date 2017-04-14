@@ -45,7 +45,7 @@ public class WalletController
 	private Wallet wallet;
 	private NetworkParameters params;
 	private User user;
-	protected static final String path = BlockchainDriver.saveLocation + "\\SeniorProject_Bitcoin_Client\\friends.ser";
+	protected static final String path = BlockchainDriver.networkSaveLocation + "\\SeniorProject_Bitcoin_Client\\friends.ser";
 	
 	/***
 	 * @author Francis Fasola
