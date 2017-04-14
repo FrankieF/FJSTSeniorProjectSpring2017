@@ -13,7 +13,14 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.JOptionPane;
 
-import org.bitcoinj.core.*;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.DumpedPrivateKey;
+import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.InsufficientMoneyException;
+import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.wallet.SendRequest;
 import org.bitcoinj.wallet.Wallet;
 import org.bitcoinj.wallet.Wallet.BalanceType;
@@ -23,6 +30,7 @@ import org.bitcoinj.wallet.listeners.WalletCoinsSentEventListener;
 import com.google.common.util.concurrent.MoreExecutors;
 
 import groupSPV.model.Friend;
+import groupSPV.model.User;
 import groupSPV.view.WalletGUI;
 
 /**
@@ -37,7 +45,7 @@ public class WalletController
 	private Wallet wallet;
 	private NetworkParameters params;
 	private User user;
-	protected static final String path = groupSPV.Utils.getSystemPath() + "\\SeniorProject_Bitcoin_Client\\friends.ser";
+	protected static final String path = BlockchainDriver.saveLocation + "\\SeniorProject_Bitcoin_Client\\friends.ser";
 	
 	/***
 	 * @author Francis Fasola

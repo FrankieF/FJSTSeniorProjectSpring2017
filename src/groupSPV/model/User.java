@@ -4,9 +4,8 @@ import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
-
-import groupSPV.model.Friend;
 
 /** User object for usernames and hashed passwords.
  * @author Frank Fasola
@@ -21,7 +20,7 @@ public class User implements Serializable {
 	/** Stored username and hashed password. */
 	private String username, hashedPassword;
 	
-	private List<Friend> friendKeys;
+	private List<Friend> friendKeys = new ArrayList<Friend>();
 	
 	/** Create a new user, store username and hash given password.
 	 * @param username Username.
