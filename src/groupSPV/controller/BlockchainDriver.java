@@ -5,7 +5,6 @@ import java.io.PrintStream;
 
 import org.bitcoinj.utils.BriefLogFormatter;
 
-import groupSPV.Utils.Utils;
 import groupSPV.model.CustomKit;
 import groupSPV.view.LoginGUI;
 

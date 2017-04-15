@@ -1,4 +1,4 @@
-package groupSPV.Utils;
+package groupSPV.controller;
 
 import groupSPV.model.CustomKit;
 import groupSPV.model.User;
