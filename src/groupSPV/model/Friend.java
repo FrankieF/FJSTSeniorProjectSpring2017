@@ -41,7 +41,7 @@ public class Friend implements Serializable {
 	}
 	
 	/** Sets the key of Friend.
-	 * @param name Friend key. */
+	 * @param key Friend key. */
 	public void setKey(String key) {
 		this.key = key;
 	}

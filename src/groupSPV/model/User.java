@@ -20,6 +20,7 @@ public class User implements Serializable {
 	/** Stored username and hashed password. */
 	private String username, hashedPassword;
 	
+	/** ArrayList of Friend keys. */
 	private List<Friend> friendKeys = new ArrayList<Friend>();
 	
 	/** Create a new user, store username and hash given password.
@@ -44,6 +45,8 @@ public class User implements Serializable {
 		return getUsername();
 	}
 	
+	/** Get the User's username.
+	 * @return Username as String. */
 	public String getUsername() {
 		return this.username;
 	}
@@ -72,6 +75,8 @@ public class User implements Serializable {
 		}
 	}
 	
+	/** Get a list of friend keys.
+	 * @return ArrayList. */
 	public List<Friend> getFriendKeys() {
 		return this.friendKeys;
 	}

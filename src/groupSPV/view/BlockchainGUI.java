@@ -17,11 +17,19 @@ import groupSPV.model.CustomKit;
 
 public class BlockchainGUI extends JFrame {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 6385080842879973690L;
+	
+	/** Main JTable. */
 	private JTable table;
+	
+	/** Main JScrollPane. */
 	private JScrollPane scrollPane;
+	
+	/** Current CustomKit. */
 	private CustomKit kit;
 
+	/** Creates and displays the BlockchainGUI.
+	 * @param kit CustomKit to utilize. */
 	public BlockchainGUI(CustomKit kit) {
 		super("Blockchain");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -66,7 +74,7 @@ public class BlockchainGUI extends JFrame {
 	}
 
 	/** Updates table
-	 * @throws BlockStoreException */
+	 * @throws BlockStoreException Thrown if BlockStore does not have previous block.  */
 	public void updateTable() throws BlockStoreException {
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		model.setRowCount(0);

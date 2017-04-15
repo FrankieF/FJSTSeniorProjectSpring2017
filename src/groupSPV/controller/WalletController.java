@@ -51,8 +51,6 @@ public class WalletController
 	 * @author Francis Fasola
 	 * Constructs a new wallet controller object.
 	 * @param params The network the wallet runs on.
-	 * @throws Exception 
-	 * @throws IOException 
 	 */
 	public WalletController (Wallet wallet) {
 		this.wallet = wallet;
