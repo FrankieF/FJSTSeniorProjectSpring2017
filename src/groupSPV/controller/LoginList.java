@@ -59,6 +59,19 @@ public class LoginList {
 		return null;
 	}
 	
+	/** Returns if a username already exists.
+	 * @param username Username to check.
+	 * @return boolean true if exits, false if doesn't. */	
+	public static boolean exists(String username){
+		load();
+		for(User user : users){
+			if(username.equals(user.toString())){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/** Saves the User ArrayList. */
 	private static void save() {
 		try {

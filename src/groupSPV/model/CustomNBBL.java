@@ -14,7 +14,7 @@ import groupSPV.view.BlockchainGUI;
 * @author Trevor Silva */
 public class CustomNBBL implements NewBestBlockListener {
 
-	/** BlockchainGUI to interact with. */
+  /** BlockchainGUI to interact with. */
 	private BlockchainGUI bcg;
 	
 	/** Creates a new Listener.
@@ -27,6 +27,7 @@ public class CustomNBBL implements NewBestBlockListener {
 	public void notifyNewBestBlock(StoredBlock block) throws VerificationException {
 		try {
 			bcg.updateTable();
+			BlockchainGUI.hideBtnMoreInfo();
 		} catch (BlockStoreException e) {
 			System.err.println(e.getMessage());
 		}
