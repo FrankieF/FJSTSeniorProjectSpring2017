@@ -29,13 +29,22 @@ import groupSPV.model.CustomKit;
 * @author Trevor Silva */
 public class BlockchainGUI extends JFrame {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 6385080842879973690L;
+	
+	/** Main JTable. */
 	private JTable table;
+	
+	/** Main JScrollPane. */
 	private JScrollPane scrollPane;
+
 	private JButton btnOpenWallet;
 	private static JButton btnMoreInfo;
+  
+  /** Current CustomKit. */
 	private CustomKit kit;
 
+	/** Creates and displays the BlockchainGUI.
+	 * @param kit CustomKit to utilize. */
 	public BlockchainGUI(CustomKit kit) {
 		super("Blockchain");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

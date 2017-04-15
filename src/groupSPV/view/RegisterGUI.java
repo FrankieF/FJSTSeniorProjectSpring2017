@@ -74,7 +74,7 @@ public class RegisterGUI extends JFrame {
 		canceButton = new JButton();
 		registerBtn = new JButton();
 
-		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 		jLabel1.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
 		jLabel1.setText("Register an Account");

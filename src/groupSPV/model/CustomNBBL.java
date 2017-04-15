@@ -8,14 +8,17 @@ import org.bitcoinj.store.BlockStoreException;
 import groupSPV.view.BlockchainGUI;
 
 /** Custom NewBestBlock Listener to update Blockchain GUI.
-*
 * @author Frank Fasola
 * @author James Donnell
 * @author Spencer Escalante
 * @author Trevor Silva */
 public class CustomNBBL implements NewBestBlockListener {
+
+  /** BlockchainGUI to interact with. */
 	private BlockchainGUI bcg;
 	
+	/** Creates a new Listener.
+	 * @param bcg BlockchainGUI to interact with. */
 	public CustomNBBL(BlockchainGUI bcg) {
 		this.bcg = bcg;
 	}
