@@ -7,6 +7,7 @@ import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
@@ -74,7 +75,7 @@ public class LoginGUI extends JFrame {
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		setTitle("BitCoin Wallet");
 
-		userLabel.setText("UserName:");
+		userLabel.setText("Username:");
 
 		passwordLabel.setText("Password:");
 
@@ -135,6 +136,8 @@ public class LoginGUI extends JFrame {
 		userField.getAccessibleContext().setAccessibleName("usernameTextField");
 		userField.getAccessibleContext().setAccessibleDescription("");
 
+		getRootPane().setDefaultButton(loginBtn);
+		
 		pack();
 	}// </editor-fold>
 
@@ -143,6 +146,10 @@ public class LoginGUI extends JFrame {
 		if((user = LoginList.verifyUser(userField.getText(), new String(passwordField.getPassword()))) != null) {
 			this.dispose();
 			AfterLogin.startGUI(user);
+		} else{
+			JOptionPane.showMessageDialog(null,"Either Username or Password is incorrect", "Login Error",JOptionPane.ERROR_MESSAGE);
+			userField.setText("");
+			passwordField.setText("");
 		}
 	}
 
