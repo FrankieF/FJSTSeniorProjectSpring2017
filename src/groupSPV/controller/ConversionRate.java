@@ -80,12 +80,50 @@ public class ConversionRate {
 	
 	/** Countries which are supported via the current blockchain.info API. */
 	public enum SupportedCurrency {
-		America, Japan, China, Singapore,
-		HongKong, Canada, NewZealand, Australia,
-		Chile, UnitedKingdom, Denmark, Sweden,
-		Iceland, Switzerland, Brazil, Europe,
-		Russia, Poland, Thailand, SouthKorea,
-		Taiwan, India
+		/** Represents the United States Dollar. */
+		America,
+		/** Represents the Japanese Yen. */
+		Japan,
+		/** Represents the Chinese Renminbi. */
+		China,
+		/** Represents the Singaporean Dollar. */
+		Singapore,
+		/** Represents the Hong Kong Dollar. */
+		HongKong,
+		/** Represents the Canadian Dollar. */
+		Canada,
+		/** Represents the New Zealand Dollar. */
+		NewZealand,
+		/** Represents the Australian Dollar.  */
+		Australia,
+		/** Represents the Chilean Peso. */
+		Chile,
+		/** Represents the Pound Sterling. */
+		UnitedKingdom,
+		/** Represents the Danish Krone. */
+		Denmark,
+		/** Represents the Swedish Krona. */
+		Sweden,
+		/** Represents the Icelandic Króna. */
+		Iceland,
+		/** Represents the Swiss Franc. */
+		Switzerland,
+		/** Represents the Brazilian Real. */
+		Brazil,
+		/** Represents the Euro. */
+		Europe,
+		/** Represents the Russian Ruble. */
+		Russia,
+		/** Represents the Polish Zloty. */
+		Poland,
+		/** Represents the Thai Baht. */
+		Thailand,
+		/** Represents the Korean Republic Won. */
+		SouthKorea,
+		/** Represents the New Taiwan Dollar. */
+		Taiwan,
+		/** Represents the Indian Rupee. */
+		India
 	}
 	
 	/** Returns the currency code of the given SupportedCurrency.
