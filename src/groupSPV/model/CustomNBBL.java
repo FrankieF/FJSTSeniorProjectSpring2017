@@ -25,6 +25,7 @@ public class CustomNBBL implements NewBestBlockListener {
 	public void notifyNewBestBlock(StoredBlock block) throws VerificationException {
 		try {
 			bcg.updateTable();
+			BlockchainGUI.hideBtnMoreInfo();
 		} catch (BlockStoreException e) {
 			System.err.println(e.getMessage());
 		}
