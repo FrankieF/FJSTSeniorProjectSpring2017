@@ -20,7 +20,6 @@ public class BlockchainGUI extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JTable table;
 	private JScrollPane scrollPane;
-	private JButton btnNewButton;
 	private CustomKit kit;
 
 	public BlockchainGUI(CustomKit kit) {
@@ -42,27 +41,10 @@ public class BlockchainGUI extends JFrame {
 		scrollPane = new JScrollPane(table);
 		getContentPane().add(scrollPane);
 
-		// TODO Remove this button, not needed with CustomNBBL.java -James
-		btnNewButton = new JButton("Update Table");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					updateTable();
-				} catch (BlockStoreException e) {
-					e.printStackTrace();
-				}
-			}
-		});
-
-		getContentPane().add(btnNewButton);
-
 		springLayout.putConstraint(SpringLayout.NORTH, scrollPane, 50, SpringLayout.NORTH, getContentPane());
 		springLayout.putConstraint(SpringLayout.WEST, scrollPane, 50, SpringLayout.WEST, getContentPane());
 		springLayout.putConstraint(SpringLayout.SOUTH, scrollPane, -50, SpringLayout.SOUTH, getContentPane());
 		springLayout.putConstraint(SpringLayout.EAST, scrollPane, -50, SpringLayout.EAST, getContentPane());
-
-		springLayout.putConstraint(SpringLayout.SOUTH, btnNewButton, -10, SpringLayout.SOUTH, getContentPane());
-		springLayout.putConstraint(SpringLayout.EAST, btnNewButton, 0, SpringLayout.EAST, scrollPane);
 
 		JButton btnOpenWallet = new JButton("Wallet");
 		btnOpenWallet.addActionListener(new ActionListener() {
