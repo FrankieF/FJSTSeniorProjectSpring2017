@@ -14,7 +14,6 @@ import groupSPV.view.BlockchainGUI;
 * @author Spencer Escalante
 * @author Trevor Silva */
 public class CustomNBBL implements NewBestBlockListener {
-
 	private BlockchainGUI bcg;
 	
 	public CustomNBBL(BlockchainGUI bcg) {
