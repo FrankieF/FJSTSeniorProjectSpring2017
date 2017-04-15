@@ -7,6 +7,7 @@ import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
@@ -160,15 +161,21 @@ public class RegisterGUI extends JFrame {
 								.addComponent(canceButton).addComponent(registerBtn))
 						.addContainerGap(33, Short.MAX_VALUE)));
 
+		getRootPane().setDefaultButton(registerBtn);
 		pack();
 	}// </editor-fold>
 
 	private void registerBtnActionPerformed(ActionEvent evt) {
 		String passwordString = new String(password.getPassword());
-		if(passwordString.equals(new String(verifyPassword.getPassword()))) {
+		if(!username.getText().equals("") && !passwordString.equals("") && passwordString.equals(new String(verifyPassword.getPassword())) && LoginList.exists(username.getText())== false) {
 			LoginList.addUser(username.getText(), passwordString);
+			dispose();
+		}else{
+			JOptionPane.showMessageDialog(null,"User Exists or Fields Are Null", "Registration Error",JOptionPane.ERROR_MESSAGE);
+			username.setText("");
+			password.setText("");
+			verifyPassword.setText("");
 		}
-		dispose();
 	}
 
 	private void cancelButtonActionPerformed(ActionEvent evt) {
