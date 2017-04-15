@@ -5,6 +5,7 @@ import java.io.PrintStream;
 
 import org.bitcoinj.utils.BriefLogFormatter;
 
+import groupSPV.Utils.Utils;
 import groupSPV.model.CustomKit;
 import groupSPV.view.LoginGUI;
 
@@ -15,42 +16,22 @@ import groupSPV.view.LoginGUI;
  * @author Trevor Silva */
 public class BlockchainDriver {
 
-	/** Default save location for any OS on a particular Bitcoin Network. */
-	protected static String networkSaveLocation = getSystemPath() + "SeniorProject_Bitcoin_Client\\";
-	
-	protected static int currentNetwork;
-	
-	/** Default TestNet Folder. */
-	private static final String testNetFolder = "test\\";
-
 	/** Main method.
 	 * @param args Argument stating "testnet" will use Bitcoin Test network. */
 	public static void main(String[] args) {
 		BriefLogFormatter.init(); // Sets logging format, default for now
 		ignoreSELF4JErrors();
-
-		currentNetwork = CustomKit.MAINNET;
 		
 		if (args.length > 0 && args[0].equals("testnet")) {
 			System.out.println("TESTNET IN USE!!!");
-			networkSaveLocation += testNetFolder;
-			currentNetwork = CustomKit.TESTNET;
+			Utils.setNetwork(CustomKit.TESTNET);
 		}
 		
-		File tmpFile = new File(networkSaveLocation);
+		File tmpFile = new File(Utils.getSystemPath());
 		if(!tmpFile.exists())
 			tmpFile.mkdirs();
 		
 		new LoginGUI();
-	}
-
-	/** Returns User's full 'AppData' path if Windows, blank string if not.
-	 *  @return 'AppData' full path. */
-	private static String getSystemPath() {
-		String appData = System.getenv("appdata");
-		
-		if (appData == null) return "";
-		return appData + "\\";
 	}
 	
 	/** Ignores errors related to "SELF4J" in System.err.

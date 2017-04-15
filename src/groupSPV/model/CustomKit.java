@@ -35,6 +35,8 @@ public class CustomKit {
 	/** WalletController object used in project Wallet-based GUIs. */
 	private WalletController wc;
 	
+	private User user;
+	
 	/** List of all current NewBestBlockListeners. */
 	private List<NewBestBlockListener> newBestBlockListeners = new ArrayList<NewBestBlockListener>();
 	
@@ -54,27 +56,30 @@ public class CustomKit {
 	 *          SETUP
 	 * ----------------------- */
 	/** Constructor for creating a CustomKit at a particular saveLocation. Uses default bitcoin network.
-	 * @param saveLocation File object of folder location to save client files. */
-	public CustomKit(File saveLocation) {
-		this(MAINNET, saveLocation);
+	 * @param saveLocation File object of folder location to save client files.
+	 * @param User for wallet. */
+	public CustomKit(File saveLocation, User user) {
+		this(MAINNET, saveLocation, user);
 	}
 	
 	/** Constructor for creating a CustomKit at a particular saveLocation. Uses network ints.
 	 * TestNet if 1, MainNet if anything else.
 	 * @param network Network selection integer.
-	 * @param saveLocation File object of folder location to save client files. */
-	public CustomKit(int network, File saveLocation) { 
+	 * @param saveLocation File object of folder location to save client files.
+	 * @param User for wallet. */
+	public CustomKit(int network, File saveLocation, User user) { 
 		if (network == TESTNET)
 			wak = new WalletAppKit(TestNet3Params.get(), saveLocation, testFilePrefix);
 		else
 			wak = new WalletAppKit(MainNetParams.get(), saveLocation, defaultFilePrefix);
+		this.user = user;
 	}
 	
 	/** Starts downloading of Blockchain, holds until fully downloaded. */
 	public void startAndWait() {
 		wak.startAsync(); // Start WAK
 		wak.awaitRunning(); // Wait for WAK to fully start
-		wc = new WalletController(wak.wallet()); // Create WC after done
+		wc = new WalletController(wak.wallet(), user); // Create WC after done
 	}
 	
 	/** Stops synchronizing processes, holds until fully stopped. */
