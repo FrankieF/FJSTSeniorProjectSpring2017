@@ -2,6 +2,7 @@ package groupSPV.view;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
+import java.math.RoundingMode;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -12,6 +13,9 @@ import javax.swing.table.DefaultTableModel;
 
 import org.bitcoinj.core.Block;
 import org.bitcoinj.core.Transaction;
+
+import groupSPV.controller.ConversionRate;
+import groupSPV.model.BigCoin;
 
 /** ExtendedBlockchain is a popup window that is displayed upon clicking
  * the more info button in the BlockchainGUI
@@ -30,16 +34,20 @@ public class ExtendedBlockchain extends JFrame{
 	private Block fullBlock;
 	private JTable table;
 	private JScrollPane scrollPane;
+	private JLabel lblAmount;
 	private JLabel lblDifficulty;
 	private JLabel lblNonce;
 	private JLabel lblMessageSize;
 	private JLabel lblMerkleRoot;
 	private JLabel lblWork;
+	private JLabel lblA;
 	private JLabel lblDPW;
 	private JLabel lblN;
 	private JLabel lblMS;
 	private JLabel lblMR;
 	private JLabel lblW;
+	
+	
 	
 	public ExtendedBlockchain(int blockNumber, Block b) {
 		super("Block: " + blockNumber);
@@ -68,11 +76,17 @@ public class ExtendedBlockchain extends JFrame{
 		/	      Setup of the JPanel   	  /
 		/									  /
 		/*************************************/		
+		BigCoin totalCoins = BigCoin.totalTransactions(fullBlock.getTransactions());
+		ConversionRate.update(ConversionRate.SupportedCurrency.America);
+		String usdString = ConversionRate.convert(totalCoins).setScale(2, RoundingMode.HALF_UP).toPlainString();
+		
+		lblAmount = new JLabel("Total Amount of Bitcoins: ");
 		lblDifficulty = new JLabel("Difficulty of the Proof of Work: ");
 		lblNonce = new JLabel("Nonce:");
 		lblMessageSize = new JLabel("Message Size:");
 		lblMerkleRoot = new JLabel("Merkle Root:");
 		lblWork = new JLabel("Work:");
+		lblA = new JLabel(totalCoins.getBitcoin().toPlainString() + " BTC ($" + usdString + " USD)");
 		lblDPW = new JLabel(String.valueOf(fullBlock.getDifficultyTarget()));
 		lblN = new JLabel(String.valueOf(fullBlock.getNonce()));
 		lblMS = new JLabel(String.valueOf(fullBlock.getMessageSize()));
@@ -83,12 +97,15 @@ public class ExtendedBlockchain extends JFrame{
 		/	      Add Everything to 	   	  /
 		/		     contentpane			  /
 		/*************************************/
+		
 		getContentPane().add(scrollPane);
+		getContentPane().add(lblAmount);
 		getContentPane().add(lblDifficulty);
 		getContentPane().add(lblNonce);
 		getContentPane().add(lblMessageSize);
 		getContentPane().add(lblMerkleRoot);
 		getContentPane().add(lblWork);
+		getContentPane().add(lblA);
 		getContentPane().add(lblDPW);
 		getContentPane().add(lblN);
 		getContentPane().add(lblMS);
@@ -101,25 +118,31 @@ public class ExtendedBlockchain extends JFrame{
 		/	      Constraint setup		   	  /
 		/									  /
 		/*************************************/
-		springLayout.putConstraint(SpringLayout.NORTH, scrollPane, 150, SpringLayout.NORTH, getContentPane());
+		springLayout.putConstraint(SpringLayout.NORTH, scrollPane, 175, SpringLayout.NORTH, getContentPane());
 		springLayout.putConstraint(SpringLayout.SOUTH, scrollPane, -10, SpringLayout.SOUTH, getContentPane());
 		springLayout.putConstraint(SpringLayout.EAST, scrollPane, -10, SpringLayout.EAST, getContentPane());
 
-		springLayout.putConstraint(SpringLayout.WEST, scrollPane, 0, SpringLayout.WEST, lblDifficulty);
-		springLayout.putConstraint(SpringLayout.NORTH, lblDifficulty, 34, SpringLayout.NORTH, getContentPane());
-		springLayout.putConstraint(SpringLayout.WEST, lblDifficulty, 10, SpringLayout.WEST, getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, scrollPane, 0, SpringLayout.WEST, lblAmount);
+		springLayout.putConstraint(SpringLayout.NORTH, lblAmount, 34, SpringLayout.NORTH, getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, lblAmount, 10, SpringLayout.WEST, getContentPane());
 
+		springLayout.putConstraint(SpringLayout.NORTH, lblDifficulty, 6, SpringLayout.SOUTH, lblAmount);
+		springLayout.putConstraint(SpringLayout.WEST, lblDifficulty, 0, SpringLayout.WEST, lblAmount);
+		
 		springLayout.putConstraint(SpringLayout.NORTH, lblNonce, 6, SpringLayout.SOUTH, lblDifficulty);
 		springLayout.putConstraint(SpringLayout.WEST, lblNonce, 0, SpringLayout.WEST, lblDifficulty);
 
 		springLayout.putConstraint(SpringLayout.NORTH, lblMessageSize, 6, SpringLayout.SOUTH, lblNonce);
-		springLayout.putConstraint(SpringLayout.WEST, lblMessageSize, 0, SpringLayout.WEST, lblDifficulty);
+		springLayout.putConstraint(SpringLayout.WEST, lblMessageSize, 0, SpringLayout.WEST, lblAmount);
 		
 		springLayout.putConstraint(SpringLayout.NORTH, lblMerkleRoot, 6, SpringLayout.SOUTH, lblMessageSize);
-		springLayout.putConstraint(SpringLayout.WEST, lblMerkleRoot, 0, SpringLayout.WEST, lblDifficulty);
+		springLayout.putConstraint(SpringLayout.WEST, lblMerkleRoot, 0, SpringLayout.WEST, lblAmount);
 		
 		springLayout.putConstraint(SpringLayout.NORTH, lblWork, 6, SpringLayout.SOUTH, lblMerkleRoot);
-		springLayout.putConstraint(SpringLayout.WEST, lblWork, 0, SpringLayout.WEST, lblDifficulty);
+		springLayout.putConstraint(SpringLayout.WEST, lblWork, 0, SpringLayout.WEST, lblAmount);
+		
+		springLayout.putConstraint(SpringLayout.WEST, lblA, 6, SpringLayout.EAST, lblAmount);
+		springLayout.putConstraint(SpringLayout.SOUTH, lblA, 0, SpringLayout.SOUTH, lblAmount);
 
 		springLayout.putConstraint(SpringLayout.WEST, lblDPW, 6, SpringLayout.EAST, lblDifficulty);
 		springLayout.putConstraint(SpringLayout.SOUTH, lblDPW, 0, SpringLayout.SOUTH, lblDifficulty);
