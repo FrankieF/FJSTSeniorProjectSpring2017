@@ -1,6 +1,7 @@
 package groupSPV.controller;
 
 import java.io.File;
+import java.io.PrintStream;
 
 import org.bitcoinj.utils.BriefLogFormatter;
 
@@ -26,6 +27,7 @@ public class BlockchainDriver {
 	 * @param args Argument stating "testnet" will use Bitcoin Test network. */
 	public static void main(String[] args) {
 		BriefLogFormatter.init(); // Sets logging format, default for now
+		ignoreSELF4JErrors();
 
 		currentNetwork = CustomKit.MAINNET;
 		
@@ -53,5 +55,15 @@ public class BlockchainDriver {
 		
 		if (appData == null) return "";
 		return appData + "\\";
+	}
+	
+	private static void ignoreSELF4JErrors() {
+		PrintStream filterOut = new PrintStream(System.err) {
+			public void println(String l) {
+				if (! l.startsWith("SLF4J") )
+					super.println(l);
+			}
+		};
+		System.setErr(filterOut);
 	}
 }
