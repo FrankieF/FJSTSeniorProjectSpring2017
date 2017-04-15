@@ -15,6 +15,7 @@ import org.bitcoinj.core.Block;
 import org.bitcoinj.core.Transaction;
 
 import groupSPV.controller.ConversionRate;
+import groupSPV.controller.Utils;
 import groupSPV.model.BigCoin;
 
 /** ExtendedBlockchain is a popup window that is displayed upon clicking
@@ -158,6 +159,8 @@ public class ExtendedBlockchain extends JFrame{
 		
 		springLayout.putConstraint(SpringLayout.WEST, lblW, 6, SpringLayout.EAST, lblWork);
 		springLayout.putConstraint(SpringLayout.SOUTH, lblW, 0, SpringLayout.SOUTH, lblWork);
+		
+		Utils.setWindowCenterOfScreen(this);
 	}
 	
 	/**

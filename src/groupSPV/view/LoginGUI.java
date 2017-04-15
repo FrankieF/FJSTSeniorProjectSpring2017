@@ -17,6 +17,7 @@ import javax.swing.WindowConstants;
 
 import groupSPV.controller.AfterLogin;
 import groupSPV.controller.LoginList;
+import groupSPV.controller.Utils;
 import groupSPV.model.User;
 
 /**
@@ -53,6 +54,7 @@ public class LoginGUI extends JFrame {
 			java.util.logging.Logger.getLogger(LoginGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, exception);
 		}
 		initComponents();
+		Utils.setWindowCenterOfScreen(this);
 		setVisible(true);
 	}
 

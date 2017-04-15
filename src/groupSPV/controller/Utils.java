@@ -1,5 +1,9 @@
 package groupSPV.controller;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.Window;
+
 import groupSPV.model.CustomKit;
 import groupSPV.model.User;
 
@@ -46,5 +50,12 @@ public class Utils {
 	
 	public static int getNetwork() {
 		return currentNetwork;
+	}
+	
+	/** Sets the given window location to the center of the User's screen.
+	 * @param window Window to center. */
+	public static void setWindowCenterOfScreen(Window window) {
+		Dimension userScreenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		window.setLocation(userScreenSize.width/2-window.getSize().width/2, userScreenSize.height/2-window.getSize().height/2);
 	}
 }
