@@ -5,6 +5,7 @@ import java.io.PrintStream;
 
 import org.bitcoinj.utils.BriefLogFormatter;
 
+import groupSPV.model.BigCoin;
 import groupSPV.model.CustomKit;
 import groupSPV.view.LoginGUI;
 
@@ -43,9 +44,9 @@ public class BlockchainDriver {
 		
 		new LoginGUI();
 		
-		/*ConversionRate.update(); // Must call update when you want to update. Value stored for multiple conversions.
+		ConversionRate.update(ConversionRate.SupportedCurrency.India); // Must call update when you want to update. Value stored for multiple conversions.
 		BigCoin testCoins = new BigCoin(Long.parseLong("1000000000")); // 10 BTC
-		System.out.println(ConversionRate.convert(testCoins)); // 10 BTC to USD*/
+		System.out.println(ConversionRate.convert(testCoins)); // 10 BTC to INR*/
 	}
 
 	/** Returns User's full 'AppData' path if Windows, blank string if not.

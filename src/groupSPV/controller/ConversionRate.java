@@ -25,9 +25,6 @@ public class ConversionRate {
 	/** Blockchain.info API URL. */
 	private static final String blockchainURL = "https://blockchain.info/ticker";
 	
-	/** Currency code for update(currencyCode) method. */
-	public static final String USD = "USD", EURO = "EUR";
-	
 	/** Returns the stored conversion rate.
 	 * @return BigDecimal. */
 	public static BigDecimal getConversionRate() {
@@ -43,7 +40,7 @@ public class ConversionRate {
 	
 	/** Updates stored conversion rate with current conversion rate of given currency code.
 	 * @param currencyCode Currency code to get conversion rate of. */
-	public static void update(String currencyCode) {
+	private static void update(String currencyCode) {
 		try {
 			String jsonString = getJsonAsString();
 			JsonObject jsonObject = new JsonParser().parse(jsonString).getAsJsonObject();
@@ -53,9 +50,15 @@ public class ConversionRate {
 		}
 	}
 	
+	/** Updates stored conversion rate with current conversion rate of SupportedCurrency.
+	 * @param currency SupportedCurrency to get conversion rate of. */
+	public static void update(SupportedCurrency currency) {
+		update(getCurrencyCode(currency));
+	}
+	
 	/** Updates stored conversion rate with current conversion rate of USD. */
 	public static void update() {
-		update(USD);
+		update(SupportedCurrency.America);
 	}
 	
 	/** Handles HTTP request, returns JSON as String.
@@ -73,5 +76,69 @@ public class ConversionRate {
 		}
 		rd.close();
 		return sb.toString();
+	}
+	
+	/** Countries which are supported via the current blockchain.info API. */
+	public enum SupportedCurrency {
+		America, Japan, China, Singapore,
+		HongKong, Canada, NewZealand, Australia,
+		Chile, UnitedKingdom, Denmark, Sweden,
+		Iceland, Switzerland, Brazil, Europe,
+		Russia, Poland, Thailand, SouthKorea,
+		Taiwan, India
+	}
+	
+	/** Returns the currency code of the given SupportedCurrency.
+	 * @param currency SupportedCurrency to use.
+	 * @return Currency code as String. */
+	public static String getCurrencyCode(SupportedCurrency currency) {
+		switch(currency) {
+		case America:
+			return "USD";
+		case Japan:
+			return "JPY";
+		case China:
+			return "CNY";
+		case Singapore:
+			return "SGD";
+		case HongKong:
+			return "HKD";
+		case Canada:
+			return "CAD";
+		case NewZealand:
+			return "NZD";
+		case Australia:
+			return "AUD";
+		case Chile:
+			return "CLP";
+		case UnitedKingdom:
+			return "GBP";
+		case Denmark:
+			return "DKK";
+		case Sweden:
+			return "SEK";
+		case Iceland:
+			return "ISK";
+		case Switzerland:
+			return "CHF";
+		case Brazil:
+			return "BRL";
+		case Europe:
+			return "EUR";
+		case Russia:
+			return "RUB";
+		case Poland:
+			return "PLN";
+		case Thailand:
+			return "THB";
+		case SouthKorea:
+			return "KRW";
+		case Taiwan:
+			return "TWD";
+		case India:
+			return "INR";
+		default:
+			return null;
+		}
 	}
 }
