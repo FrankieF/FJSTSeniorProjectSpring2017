@@ -17,17 +17,13 @@ import groupSPV.view.SyncGUI;
  * @author Trevor Silva */
 public class AfterLogin {
 
-	/** Save location for logged in user. */
-	private static String userSaveLocation;
-	
 	/** Starts BlockchainGUI with particular user.
 	 * @param user User to start GUI with. */
 	public static void startGUI(User user) {
-		userSaveLocation = BlockchainDriver.networkSaveLocation + user.getUsername() + "\\";
-		
 		JFrame syncScreen = new SyncGUI("Updating blockchain for " + user.getUsername() + " ...");
-		CustomKit kit = new CustomKit(BlockchainDriver.currentNetwork, new File(userSaveLocation));
-		kit.startAndWait(user);
+		
+		CustomKit kit = new CustomKit(Utils.getNetwork(), new File(Utils.getUserPath(user)), user);
+		kit.startAndWait();
 		syncScreen.dispose();
 		
 		BlockchainGUI bcGUI = new BlockchainGUI(kit);

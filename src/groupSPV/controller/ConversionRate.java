@@ -7,6 +7,8 @@ import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import org.bitcoinj.core.Coin;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -36,6 +38,13 @@ public class ConversionRate {
 	 * @return BigDecimal. */
 	public static BigDecimal convert(BigCoin coin) {
 		return coin.getBitcoin().multiply(conversionRate);
+	}
+	
+	/** Converts a Coin to currency.
+	 * @param coin Coin object.
+	 * @return BigDecimal. */
+	public static BigDecimal convert(Coin coin) {
+		return convert(new BigCoin(coin));
 	}
 	
 	/** Updates stored conversion rate with current conversion rate of given currency code.

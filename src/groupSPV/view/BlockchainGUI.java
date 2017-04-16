@@ -60,12 +60,14 @@ public class BlockchainGUI extends JFrame {
 		/*************************************/
 		table = new JTable();
 		table.setModel(new DefaultTableModel(
-			new Object[][] {
-			},
-			new String[] {
-				"Block", "Hash", "Time", "Version"
+			new Object[][] {},
+			new String[] {"Block", "Hash", "Time", "Version"}
+		) {
+			private static final long serialVersionUID = 1L;
+			public boolean isCellEditable(int row, int column) {
+				return false;
 			}
-		));
+		});
 		table.getColumnModel().getColumn(0).setPreferredWidth(150);
 		table.getColumnModel().getColumn(0).setMaxWidth(150);
 		table.getColumnModel().getColumn(1).setPreferredWidth(650);

@@ -16,6 +16,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 
 import groupSPV.controller.LoginList;
+import groupSPV.controller.Utils;
 
 /**
  *
@@ -53,6 +54,7 @@ public class RegisterGUI extends JFrame {
 			java.util.logging.Logger.getLogger(LoginGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, exception);
 		}
 		initComponents();
+		Utils.setWindowCenterOfScreen(this);
 		setVisible(true);
 	}
 

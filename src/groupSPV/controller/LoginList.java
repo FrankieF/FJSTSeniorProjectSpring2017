@@ -17,9 +17,6 @@ import groupSPV.model.User;
  * @author Trevor Silva */
 public class LoginList {
 
-	/** Save file for Users ArrayList. */
-	private static final String saveFile = BlockchainDriver.networkSaveLocation + "loginList.ser";
-
 	/** ArrayList of Users. */
 	protected static ArrayList<User> users;
 	
@@ -75,7 +72,7 @@ public class LoginList {
 	/** Saves the User ArrayList. */
 	private static void save() {
 		try {
-			FileOutputStream fileOut = new FileOutputStream(saveFile);
+			FileOutputStream fileOut = new FileOutputStream(getSaveFile());
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			out.writeObject(users);
 			out.close();
@@ -91,7 +88,7 @@ public class LoginList {
 	@SuppressWarnings("unchecked")
 	private static void load() {
 		try {
-			FileInputStream fileIn = new FileInputStream(saveFile);
+			FileInputStream fileIn = new FileInputStream(getSaveFile());
 	        ObjectInputStream in = new ObjectInputStream(fileIn);
 	        users = (ArrayList<User>) in.readObject();
 	        in.close();
@@ -103,5 +100,9 @@ public class LoginList {
 		} catch (ClassNotFoundException cnfe) {
 			System.err.println(cnfe.getMessage());
 		}
+	}
+
+	private static String getSaveFile() {
+		return Utils.getSystemPath("loginList.ser");
 	}
 }

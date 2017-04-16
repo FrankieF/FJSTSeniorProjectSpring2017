@@ -1,13 +1,12 @@
 package groupSPV.view;
 
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Toolkit;
-import java.awt.Window;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import groupSPV.controller.Utils;
 
 
 /** JFrame to spawn while waiting for Blockchain to synchronize.
@@ -34,14 +33,7 @@ public class SyncGUI extends JFrame {
 		add(panel);
 
 		pack();
-		setWindowCenterOfScreen(this);
+		Utils.setWindowCenterOfScreen(this);
 		setVisible(true);
-	}
-	
-	/** Sets the given window location to the center of the User's screen.
-	 * @param window Window to center. */
-	private static void setWindowCenterOfScreen(Window window) {
-		Dimension userScreenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		window.setLocation(userScreenSize.width/2-window.getSize().width/2, userScreenSize.height/2-window.getSize().height/2);
 	}
 }
