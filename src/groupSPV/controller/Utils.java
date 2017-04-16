@@ -1,7 +1,7 @@
 /**
  * 
  */
-package groupSPV.Utils;
+package groupSPV.controller;
 
 /**
  * @author Frank Fasola

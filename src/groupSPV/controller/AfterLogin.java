@@ -27,7 +27,7 @@ public class AfterLogin {
 		
 		JFrame syncScreen = new SyncGUI("Updating blockchain for " + user.getUsername() + " ...");
 		CustomKit kit = new CustomKit(BlockchainDriver.currentNetwork, new File(userSaveLocation));
-		kit.startAndWait();
+		kit.startAndWait(user);
 		syncScreen.dispose();
 		
 		BlockchainGUI bcGUI = new BlockchainGUI(kit);

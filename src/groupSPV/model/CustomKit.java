@@ -23,16 +23,16 @@ import groupSPV.controller.WalletController;
 
 /** CustomKit is a "Facade" class to the bitcoinj WalletAppKit class.
  * It simplifies working with the WalletAppKit class for our specific project needs.
- * @author Frank Fasola
- * @author James Donnell
- * @author Spencer Escalante
- * @author Trevor Silva */
+*
+* @author Frank Fasola
+* @author James Donnell
+* @author Spencer Escalante
+* @author Trevor Silva */
 public class CustomKit {
 
 	/** WalletAppKit object to simplify. */
 	private WalletAppKit wak;
 	
-	/** WalletController object used in project Wallet-based GUIs. */
 	private WalletController wc;
 	
 	/** List of all current NewBestBlockListeners. */
@@ -71,10 +71,10 @@ public class CustomKit {
 	}
 	
 	/** Starts downloading of Blockchain, holds until fully downloaded. */
-	public void startAndWait() {
+	public void startAndWait(User user) {
 		wak.startAsync(); // Start WAK
 		wak.awaitRunning(); // Wait for WAK to fully start
-		wc = new WalletController(wak.wallet()); // Create WC after done
+		wc = new WalletController(wak.wallet(), user);
 	}
 	
 	/** Stops synchronizing processes, holds until fully stopped. */

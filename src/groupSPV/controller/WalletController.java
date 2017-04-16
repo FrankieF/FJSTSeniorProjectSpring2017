@@ -13,14 +13,7 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.JOptionPane;
 
-import org.bitcoinj.core.Address;
-import org.bitcoinj.core.Coin;
-import org.bitcoinj.core.DumpedPrivateKey;
-import org.bitcoinj.core.ECKey;
-import org.bitcoinj.core.InsufficientMoneyException;
-import org.bitcoinj.core.NetworkParameters;
-import org.bitcoinj.core.Transaction;
-import org.bitcoinj.core.TransactionOutput;
+import org.bitcoinj.core.*;
 import org.bitcoinj.wallet.SendRequest;
 import org.bitcoinj.wallet.Wallet;
 import org.bitcoinj.wallet.Wallet.BalanceType;
@@ -45,21 +38,19 @@ public class WalletController
 	private Wallet wallet;
 	private NetworkParameters params;
 	private User user;
-	protected static final String path = BlockchainDriver.networkSaveLocation + "\\SeniorProject_Bitcoin_Client\\friends.ser";
 	
 	/***
 	 * @author Francis Fasola
 	 * Constructs a new wallet controller object.
 	 * @param params The network the wallet runs on.
+	 * @throws Exception 
+	 * @throws IOException 
 	 */
-	public WalletController (Wallet wallet) {
+	public WalletController (Wallet wallet, User user) {
 		this.wallet = wallet;
 		params = wallet.getParams();
-		try  {
-			loadUser();
-		} catch (Exception e) {
-			user = new User("Frank","ff");
-		}
+		this.user = user;
+		loadUser();		
 		addEventListeners();
 	}
 	
@@ -195,6 +186,10 @@ public class WalletController
 		return this.wallet.getImportedKeys();
 	}
 	
+	public User getUser() {
+		return this.user;
+	}
+	
 	/**
 	 * @author Francis Fasola
 	 * Sends Bitcoin to the specified bitcoin address.
@@ -228,13 +223,12 @@ public class WalletController
 	 * @param newBalance The new balance of the wallet.
 	 */
 	private void coinsRecevied(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance) {
-		System.out.println("****** COINS RECEIVED ******");
-		System.out.println("HASH: " + tx.getHashAsString());
-		System.out.println("RECEIVED: " + tx.getValue(wallet) + " . NEW BALANCE: " + wallet.getBalance());
-		System.out.println("PREVIOUS BALANCE: " + prevBalance.value + " NEW BALANCE: " + newBalance.value);
-		System.out.println("VERSION: " + tx.getVersion());
 		Coin value = tx.getValueSentToMe(wallet);
-		System.out.println("Received transaction for " + value.toFriendlyString() + ": " + tx);
+		JOptionPane.showMessageDialog(null, "Coins receive.\nHASH: " + tx.getHashAsString() + 
+									"\nRECEIVED: " + tx.getValue(wallet) + "\nPREVIOUS BALANCE: " + 
+									prevBalance.value + " NEW BALANCE: " + newBalance.value +
+									"VERSION: " + tx.getVersion() + "Received transaction for " + 
+									value.toFriendlyString() + ": " + tx);
 	}
 	
 	/***
@@ -263,7 +257,7 @@ public class WalletController
 		});*/
 		// 			onKeysAdded(List<ECKey> keys)
 		this.wallet.addKeyChainEventListener(e -> {
-			System.out.println("KEY ADDED: " + e.toString());
+			JOptionPane.showMessageDialog(null, "Key added.", "", JOptionPane.OK_OPTION);
 		});
 	}
 	
@@ -285,6 +279,7 @@ public class WalletController
 	 */
 	public void addFriend(String name, String key) {
 		this.user.getFriendKeys().add(new Friend(name, key));
+		saveUser();
 	}
 	
 	/***
@@ -294,25 +289,33 @@ public class WalletController
 	 * @throws IOException If the file is not found.
 	 * @throws Exception Any other errors.
 	 */
-	public void loadUser () throws IOException, Exception {
-		try {
-			ObjectInputStream stream = new ObjectInputStream(new FileInputStream(path));
-			Object o = stream.readObject();
-			if (o instanceof User)
-				user = (User)o;
-			else {
+	public void loadUser() {
+		ObjectInputStream stream = null;
+		File file = new File(Utils.getSystemPath(user.getUsername() + "\\friends.ser"));
+		if (file.exists()) {
+			try {
+				stream = new ObjectInputStream(new FileInputStream(file));
+				Object o = stream.readObject();
+				if (o instanceof User)
+					user = (User)o;
+				else 
+					throw new Exception("File does not contain user data and may be corrupt!"); 
 				stream.close();
-				throw new Exception("File does not contain friend key data!"); 
+			} catch (FileNotFoundException e) {
+				System.err.println(e.getMessage());
+			} catch (IOException e) {
+				System.err.println(e.getMessage());
+			} catch (Exception e) {
+				System.err.println(e.getMessage());
+			} finally {
+				try {
+					stream.close();
+				} catch (IOException e) {
+					System.err.println(e.getMessage());
+				} catch (Exception e) {
+					System.err.println(e.getMessage());
+				}
 			}
-			stream.close();
-		} catch (FileNotFoundException e) {
-			throw new IOException("ERROR with file.", e);
-		}catch (IOException e) {
-			e.printStackTrace();
-			throw new IOException("ERROR with file.", e);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new Exception("Unkown error; friendKeys not loaded.", e);
 		}
 	}
 	
@@ -323,18 +326,16 @@ public class WalletController
 	 * @throws IOException If the file path is not valid.
 	 * @throws Exception Any other exceptions.
 	 */
-	public void saveUser() throws IOException, Exception {		
-		File file = new File(path);
+	public void saveUser() {		
+		File file = new File(Utils.getSystemPath(user.getUsername() + "\\friends.ser"));
 		try {
+			if (!file.exists())
+				file.createNewFile();
 			ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(file));
 			stream.writeObject(user);
 			stream.close();
 		} catch (IOException e) {
-			e.printStackTrace();
-			throw new IOException("ERROR with file.", e);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new Exception("Unkown error; friendKeys not saved!", e);
+			System.err.println(e.getMessage());
 		}
 	}	
 }
