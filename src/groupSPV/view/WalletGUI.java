@@ -2,6 +2,7 @@ package groupSPV.view;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.RoundingMode;
 import java.util.Iterator;
 
 import javax.swing.JButton;
@@ -14,6 +15,7 @@ import javax.swing.JTextPane;
 import javax.swing.SpringLayout;
 import javax.swing.table.DefaultTableModel;
 
+import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.store.BlockStoreException;
@@ -27,11 +29,11 @@ public class WalletGUI extends JFrame{
 	
 	private static final long serialVersionUID = 1L;
 	private WalletController wc;
-	private JTable table;
+	private JTable keyTable;
 	private JTable transactionTable;
 	private JTable pendingTransactionTable;
 	private JTable friendTable;
-	private JScrollPane scrollPane;
+	private JScrollPane keyScrollPane;
 	private JScrollPane pendingTransactionScrollPane;
 	private JScrollPane transactionScrollPane;
 	private JScrollPane friendScrollPane;
@@ -58,36 +60,50 @@ public class WalletGUI extends JFrame{
 		getContentPane().setLayout(springLayout);
 		setBounds(400, 400, 600, 443);
 		
+		ConversionRate.update(); // Get most recent exchange rate.
+		
+		/* -----------------------
+		 * Component Initialization
+		 * ----------------------- */
 		wc = walletController;
 		
+		Coin availableBalance = wc.getBalance(BalanceType.AVAILABLE);
+		
 		JLabel lblCurrentBalance = new JLabel("Current Balance:");
-		getContentPane().add(lblCurrentBalance);
-		
-		lblCurrentBalanceAmount = new JLabel(wc.getBalance(BalanceType.AVAILABLE).toFriendlyString());
-		getContentPane().add(lblCurrentBalanceAmount);
-		
+		lblCurrentBalanceAmount = new JLabel(availableBalance.toFriendlyString());
 		JLabel lblBitcoinValue = new JLabel("Bitcoin Value:");
-		getContentPane().add(lblBitcoinValue);
+		JLabel lblBitcoinValueAmount = new JLabel("$"+ConversionRate.convert(availableBalance).setScale(2, RoundingMode.HALF_UP));
 		
-		ConversionRate.update();
-		JLabel lblBitcoinValueAmount = new JLabel("$"+ConversionRate.getConversionRate().toPlainString());
-		getContentPane().add(lblBitcoinValueAmount);
+		addressPane = new JTextPane();
+		addressLabel = new JLabel("Address");
+		amountPane = new JTextPane();
+		amountLabel = new JLabel("Amount");
+		sendButton = new JButton("Send Bitcoin");
 		
-		table = new JTable();
-		table.setModel(new DefaultTableModel(new Object[][] {},
+		keyLabel = new JLabel("Key");
+		keyPane = new JTextPane();
+		addKeyButton = new JButton("Add Key");
+		randomKeyButton = new JButton("Add Random Key");
+		
+		friendNameLabel = new JLabel("Name");
+		nameTextPane = new JTextPane();
+		publicKeyLabel = new JLabel("Public Key");
+		publicKeyTextPane = new JTextPane();
+		addFriendButton = new JButton("Add Friend");
+		
+		/* --------------------
+		 * Table Initialization
+		 * -------------------- */
+		keyTable = new JTable();
+		keyTable.setModel(new DefaultTableModel(new Object[][] {},
 			new String[] {"Keys"}) {
 			private static final long serialVersionUID = 1L;
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
 		});
-		scrollPane = new JScrollPane(table);
-		springLayout.putConstraint(SpringLayout.NORTH, scrollPane, 117, SpringLayout.NORTH, getContentPane());
-		springLayout.putConstraint(SpringLayout.WEST, scrollPane, 198, SpringLayout.WEST, getContentPane());
-		springLayout.putConstraint(SpringLayout.SOUTH, scrollPane, -371, SpringLayout.SOUTH, getContentPane());
-		springLayout.putConstraint(SpringLayout.EAST, scrollPane, -796, SpringLayout.EAST, getContentPane());
-		getContentPane().add(scrollPane);
-		updateTable();
+		keyScrollPane = new JScrollPane(keyTable);
+		updateKeyTable();
 		
 		transactionTable = new JTable();
 		transactionTable.setModel(new DefaultTableModel(new Object[][] {},
@@ -98,10 +114,6 @@ public class WalletGUI extends JFrame{
 			}
 		});
 		transactionScrollPane = new JScrollPane(transactionTable);
-		springLayout.putConstraint(SpringLayout.NORTH, transactionScrollPane, 50, SpringLayout.SOUTH, scrollPane);
-		springLayout.putConstraint(SpringLayout.WEST, transactionScrollPane, 198, SpringLayout.WEST, getContentPane());
-		springLayout.putConstraint(SpringLayout.SOUTH, transactionScrollPane, -64, SpringLayout.SOUTH, getContentPane());
-		getContentPane().add(transactionScrollPane);
 		updateTransactionTable();
 		
 		pendingTransactionTable = new JTable();
@@ -113,11 +125,6 @@ public class WalletGUI extends JFrame{
 			}
 		});
 		pendingTransactionScrollPane = new JScrollPane(pendingTransactionTable);
-		springLayout.putConstraint(SpringLayout.EAST, transactionScrollPane, -178, SpringLayout.WEST, pendingTransactionScrollPane);
-		springLayout.putConstraint(SpringLayout.NORTH, pendingTransactionScrollPane, 0, SpringLayout.NORTH, transactionScrollPane);
-		springLayout.putConstraint(SpringLayout.SOUTH, pendingTransactionScrollPane, 0, SpringLayout.SOUTH, transactionScrollPane);
-		springLayout.putConstraint(SpringLayout.EAST, pendingTransactionScrollPane, -258, SpringLayout.EAST, getContentPane());
-		getContentPane().add(pendingTransactionScrollPane);
 		updatePendingTransactionTable();
 		
 		friendTable = new JTable();
@@ -129,31 +136,31 @@ public class WalletGUI extends JFrame{
 			}
 		});
 		friendScrollPane = new JScrollPane(friendTable);
-		springLayout.putConstraint(SpringLayout.WEST, pendingTransactionScrollPane, 0, SpringLayout.WEST, friendScrollPane);
-		springLayout.putConstraint(SpringLayout.NORTH, friendScrollPane, 103, SpringLayout.NORTH, getContentPane());
-		springLayout.putConstraint(SpringLayout.WEST, friendScrollPane, 178, SpringLayout.EAST, scrollPane);
-		springLayout.putConstraint(SpringLayout.SOUTH, friendScrollPane, 0, SpringLayout.SOUTH, scrollPane);
-		springLayout.putConstraint(SpringLayout.EAST, friendScrollPane, -258, SpringLayout.EAST, getContentPane());
-		getContentPane().add(friendScrollPane);
 		updateFriendTable();
 		
-		sendButton = new JButton("Send Bitcoin");
-		springLayout.putConstraint(SpringLayout.NORTH, sendButton, 88, SpringLayout.NORTH, getContentPane());
-		springLayout.putConstraint(SpringLayout.SOUTH, sendButton, -6, SpringLayout.NORTH, scrollPane);
-		sendButton.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				if (!addressPane.getText().isEmpty() && !amountPane.getText().isEmpty())
-					try {
-						wc.sendBitcoin(addressPane.getText(), amountPane.getText());
-					} catch (Exception e) { 
-						JOptionPane.showMessageDialog(null, "The address or amount is not in the correct format.", "****** Invalid Input ******", JOptionPane.ERROR_MESSAGE);
-					}
-				else
-					JOptionPane.showMessageDialog(null, "Select an address to send to..", 
-												"****** No Address selected ******", JOptionPane.OK_OPTION);
-			}});
-		getContentPane().add(sendButton);
+		
+		/* ------------------
+		 * Layout Constraints
+		 * ------------------ */
+		springLayout.putConstraint(SpringLayout.NORTH, keyScrollPane, 117, SpringLayout.NORTH, getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, keyScrollPane, 198, SpringLayout.WEST, getContentPane());
+		springLayout.putConstraint(SpringLayout.SOUTH, keyScrollPane, -371, SpringLayout.SOUTH, getContentPane());
+		springLayout.putConstraint(SpringLayout.EAST, keyScrollPane, -796, SpringLayout.EAST, getContentPane());
+		
+		springLayout.putConstraint(SpringLayout.NORTH, transactionScrollPane, 50, SpringLayout.SOUTH, keyScrollPane);
+		springLayout.putConstraint(SpringLayout.WEST, transactionScrollPane, 198, SpringLayout.WEST, getContentPane());
+		springLayout.putConstraint(SpringLayout.SOUTH, transactionScrollPane, -64, SpringLayout.SOUTH, getContentPane());
+		
+		springLayout.putConstraint(SpringLayout.EAST, transactionScrollPane, -178, SpringLayout.WEST, pendingTransactionScrollPane);
+		springLayout.putConstraint(SpringLayout.NORTH, pendingTransactionScrollPane, 0, SpringLayout.NORTH, transactionScrollPane);
+		springLayout.putConstraint(SpringLayout.SOUTH, pendingTransactionScrollPane, 0, SpringLayout.SOUTH, transactionScrollPane);
+		springLayout.putConstraint(SpringLayout.EAST, pendingTransactionScrollPane, -258, SpringLayout.EAST, getContentPane());
+		
+		springLayout.putConstraint(SpringLayout.WEST, pendingTransactionScrollPane, 0, SpringLayout.WEST, friendScrollPane);
+		springLayout.putConstraint(SpringLayout.NORTH, friendScrollPane, 0, SpringLayout.NORTH, keyScrollPane);
+		springLayout.putConstraint(SpringLayout.WEST, friendScrollPane, 178, SpringLayout.EAST, keyScrollPane);
+		springLayout.putConstraint(SpringLayout.SOUTH, friendScrollPane, 0, SpringLayout.SOUTH, keyScrollPane);
+		springLayout.putConstraint(SpringLayout.EAST, friendScrollPane, -258, SpringLayout.EAST, getContentPane());
 		
 		springLayout.putConstraint(SpringLayout.NORTH, lblCurrentBalance, 31, SpringLayout.NORTH, getContentPane());
 		springLayout.putConstraint(SpringLayout.WEST, lblCurrentBalance, 23, SpringLayout.WEST, getContentPane());
@@ -167,59 +174,105 @@ public class WalletGUI extends JFrame{
 		springLayout.putConstraint(SpringLayout.WEST, lblBitcoinValueAmount, 21, SpringLayout.EAST, lblBitcoinValue);
 		springLayout.putConstraint(SpringLayout.SOUTH, lblBitcoinValueAmount, 0, SpringLayout.SOUTH, lblBitcoinValue);
 		
-		addressPane = new JTextPane();
-		springLayout.putConstraint(SpringLayout.NORTH, addressPane, 57, SpringLayout.NORTH, getContentPane());
-		springLayout.putConstraint(SpringLayout.WEST, addressPane, 202, SpringLayout.EAST, lblBitcoinValueAmount);
-		springLayout.putConstraint(SpringLayout.SOUTH, addressPane, -628, SpringLayout.SOUTH, getContentPane());
-		springLayout.putConstraint(SpringLayout.EAST, addressPane, 0, SpringLayout.EAST, scrollPane);
-		getContentPane().add(addressPane);
+		springLayout.putConstraint(SpringLayout.NORTH, addressPane, 31, SpringLayout.NORTH, getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, addressPane, 202, SpringLayout.EAST, lblCurrentBalanceAmount);
+		springLayout.putConstraint(SpringLayout.EAST, addressPane, 0, SpringLayout.EAST, keyScrollPane);
 		
-		amountPane = new JTextPane();
-		springLayout.putConstraint(SpringLayout.WEST, sendButton, 26, SpringLayout.EAST, amountPane);
+		springLayout.putConstraint(SpringLayout.NORTH, sendButton, 0, SpringLayout.NORTH, amountPane);
+		springLayout.putConstraint(SpringLayout.EAST, sendButton, 0, SpringLayout.EAST, keyScrollPane);
+		springLayout.putConstraint(SpringLayout.WEST, sendButton, -100, SpringLayout.EAST, keyScrollPane);
+		
+		springLayout.putConstraint(SpringLayout.EAST, amountPane, -26, SpringLayout.WEST, sendButton);
 		springLayout.putConstraint(SpringLayout.NORTH, amountPane, 11, SpringLayout.SOUTH, addressPane);
 		springLayout.putConstraint(SpringLayout.WEST, amountPane, 0, SpringLayout.WEST, addressPane);
-		springLayout.putConstraint(SpringLayout.SOUTH, amountPane, -6, SpringLayout.NORTH, scrollPane);
-		springLayout.putConstraint(SpringLayout.EAST, amountPane, -124, SpringLayout.EAST, scrollPane);
-		getContentPane().add(amountPane);
 		
-		addressLabel = new JLabel("Address");
-		springLayout.putConstraint(SpringLayout.NORTH, addressLabel, 0, SpringLayout.NORTH, lblBitcoinValue);
-		getContentPane().add(addressLabel);
-		
-		amountLabel = new JLabel("Amount");
+		springLayout.putConstraint(SpringLayout.NORTH, addressLabel, 0, SpringLayout.NORTH, addressPane);
 		springLayout.putConstraint(SpringLayout.EAST, addressLabel, 0, SpringLayout.EAST, amountLabel);
-		springLayout.putConstraint(SpringLayout.SOUTH, amountLabel, -6, SpringLayout.NORTH, scrollPane);
-		springLayout.putConstraint(SpringLayout.EAST, amountLabel, -12, SpringLayout.WEST, amountPane);
-		getContentPane().add(amountLabel);
 		
-		friendNameLabel = new JLabel("Name");
+		springLayout.putConstraint(SpringLayout.NORTH, amountLabel, 0, SpringLayout.NORTH, amountPane);
+		springLayout.putConstraint(SpringLayout.EAST, amountLabel, -12, SpringLayout.WEST, amountPane);
+		
+		
 		springLayout.putConstraint(SpringLayout.NORTH, friendNameLabel, 0, SpringLayout.NORTH, friendScrollPane);
 		springLayout.putConstraint(SpringLayout.WEST, friendNameLabel, 6, SpringLayout.EAST, friendScrollPane);
-		getContentPane().add(friendNameLabel);
 		
-		publicKeyLabel = new JLabel("Public Key");
 		springLayout.putConstraint(SpringLayout.NORTH, publicKeyLabel, 17, SpringLayout.SOUTH, friendNameLabel);
-		springLayout.putConstraint(SpringLayout.WEST, publicKeyLabel, 6, SpringLayout.EAST, friendScrollPane);
-		getContentPane().add(publicKeyLabel);
+		springLayout.putConstraint(SpringLayout.WEST, publicKeyLabel, 0, SpringLayout.WEST, friendNameLabel);
 		
-		nameTextPane = new JTextPane();
-		springLayout.putConstraint(SpringLayout.NORTH, nameTextPane, 40, SpringLayout.NORTH, lblBitcoinValue);
-		springLayout.putConstraint(SpringLayout.SOUTH, nameTextPane, 0, SpringLayout.SOUTH, friendNameLabel);
+		springLayout.putConstraint(SpringLayout.NORTH, nameTextPane, 0, SpringLayout.NORTH, friendScrollPane);
 		springLayout.putConstraint(SpringLayout.EAST, nameTextPane, -37, SpringLayout.EAST, getContentPane());
-		getContentPane().add(nameTextPane);
 		
-		publicKeyTextPane = new JTextPane();
 		springLayout.putConstraint(SpringLayout.WEST, nameTextPane, 0, SpringLayout.WEST, publicKeyTextPane);
-		springLayout.putConstraint(SpringLayout.NORTH, publicKeyTextPane, 68, SpringLayout.NORTH, lblBitcoinValue);
+		springLayout.putConstraint(SpringLayout.NORTH, publicKeyTextPane, 12, SpringLayout.SOUTH, nameTextPane);
 		springLayout.putConstraint(SpringLayout.WEST, publicKeyTextPane, 6, SpringLayout.EAST, publicKeyLabel);
-		springLayout.putConstraint(SpringLayout.SOUTH, publicKeyTextPane, 0, SpringLayout.SOUTH, publicKeyLabel);
-		springLayout.putConstraint(SpringLayout.EAST, publicKeyTextPane, -37, SpringLayout.EAST, getContentPane());
-		getContentPane().add(publicKeyTextPane);
+		springLayout.putConstraint(SpringLayout.EAST, publicKeyTextPane, 0, SpringLayout.EAST, nameTextPane);
 		
-		addFriendButton = new JButton("Add Friend");
 		springLayout.putConstraint(SpringLayout.NORTH, addFriendButton, 12, SpringLayout.SOUTH, publicKeyTextPane);
 		springLayout.putConstraint(SpringLayout.EAST, addFriendButton, -77, SpringLayout.EAST, getContentPane());
+		
+		springLayout.putConstraint(SpringLayout.NORTH, keyPane, 46, SpringLayout.SOUTH, lblBitcoinValue);
+		springLayout.putConstraint(SpringLayout.WEST, keyPane, 34, SpringLayout.WEST, getContentPane());
+		springLayout.putConstraint(SpringLayout.SOUTH, keyPane, 140, SpringLayout.NORTH, getContentPane());
+		springLayout.putConstraint(SpringLayout.EAST, keyPane, -2, SpringLayout.WEST, keyScrollPane);
+		
+		springLayout.putConstraint(SpringLayout.NORTH, keyLabel, 7, SpringLayout.NORTH, keyScrollPane);
+		springLayout.putConstraint(SpringLayout.EAST, keyLabel, -6, SpringLayout.WEST, keyPane);
+		
+		springLayout.putConstraint(SpringLayout.NORTH, addKeyButton, 6, SpringLayout.SOUTH, keyPane);
+		springLayout.putConstraint(SpringLayout.EAST, addKeyButton, -62, SpringLayout.WEST, keyScrollPane);
+		
+		springLayout.putConstraint(SpringLayout.NORTH, randomKeyButton, 14, SpringLayout.SOUTH, addKeyButton);
+		springLayout.putConstraint(SpringLayout.EAST, randomKeyButton, -43, SpringLayout.WEST, keyScrollPane);
+		
+		
+		/* -------------------
+		 * Component Placement
+		 * ------------------- */
+		getContentPane().add(lblCurrentBalance);
+		getContentPane().add(lblCurrentBalanceAmount);
+		getContentPane().add(lblBitcoinValue);
+		getContentPane().add(lblBitcoinValueAmount);
+		
+		getContentPane().add(addressPane);
+		getContentPane().add(addressLabel);
+		getContentPane().add(amountPane);
+		getContentPane().add(amountLabel);
+		getContentPane().add(sendButton);
+		
+		getContentPane().add(keyLabel);
+		getContentPane().add(keyPane);
+		getContentPane().add(addKeyButton);
+		getContentPane().add(randomKeyButton);
+		
+		getContentPane().add(friendNameLabel);
+		getContentPane().add(nameTextPane);
+		getContentPane().add(publicKeyLabel);
+		getContentPane().add(publicKeyTextPane);
 		getContentPane().add(addFriendButton);
+		
+		getContentPane().add(keyScrollPane);
+		getContentPane().add(transactionScrollPane);
+		getContentPane().add(pendingTransactionScrollPane);
+		getContentPane().add(friendScrollPane);
+		
+	
+		/* ----------------
+		 * Button Listeners
+		 * ---------------- */
+		sendButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (!addressPane.getText().isEmpty() && !amountPane.getText().isEmpty())
+					try {
+						wc.sendBitcoin(addressPane.getText(), amountPane.getText());
+					} catch (Exception e) { 
+						JOptionPane.showMessageDialog(null, "The address or amount is not in the correct format.", "****** Invalid Input ******", JOptionPane.ERROR_MESSAGE);
+					}
+				else
+					JOptionPane.showMessageDialog(null, "Select an address to send to..", 
+												"****** No Address selected ******", JOptionPane.OK_OPTION);
+			}});
+		
 		addFriendButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -235,29 +288,13 @@ public class WalletGUI extends JFrame{
 												"****** No Friend Information ******", JOptionPane.OK_OPTION);
 			}});
 		
-		keyPane = new JTextPane();
-		springLayout.putConstraint(SpringLayout.NORTH, keyPane, 46, SpringLayout.SOUTH, lblBitcoinValue);
-		springLayout.putConstraint(SpringLayout.WEST, keyPane, 34, SpringLayout.WEST, getContentPane());
-		springLayout.putConstraint(SpringLayout.SOUTH, keyPane, 140, SpringLayout.NORTH, getContentPane());
-		springLayout.putConstraint(SpringLayout.EAST, keyPane, -2, SpringLayout.WEST, scrollPane);
-		getContentPane().add(keyPane);
-		
-		keyLabel = new JLabel("Key");
-		springLayout.putConstraint(SpringLayout.NORTH, keyLabel, 7, SpringLayout.NORTH, scrollPane);
-		springLayout.putConstraint(SpringLayout.EAST, keyLabel, -6, SpringLayout.WEST, keyPane);
-		getContentPane().add(keyLabel);
-		
-		addKeyButton = new JButton("Add Key");
-		springLayout.putConstraint(SpringLayout.NORTH, addKeyButton, 6, SpringLayout.SOUTH, keyPane);
-		springLayout.putConstraint(SpringLayout.EAST, addKeyButton, -62, SpringLayout.WEST, scrollPane);
-		getContentPane().add(addKeyButton);
 		addKeyButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (!keyPane.getText().isEmpty())
 					try {
 						wc.addExistingKeys(keyPane.getText());
-						updateTable();
+						updateKeyTable();
 					} catch (Exception e) { 
 						JOptionPane.showMessageDialog(null, "The key entered is not valid.", "****** Inavlid Key ******", JOptionPane.ERROR_MESSAGE);
 					}
@@ -265,31 +302,31 @@ public class WalletGUI extends JFrame{
 					JOptionPane.showMessageDialog(null, "Enter your private key.", 
 												"****** No Key ******", JOptionPane.OK_OPTION);
 			}});
-		randomKeyButton = new JButton("Add Random Key");
-		springLayout.putConstraint(SpringLayout.NORTH, randomKeyButton, 14, SpringLayout.SOUTH, addKeyButton);
-		springLayout.putConstraint(SpringLayout.EAST, randomKeyButton, -43, SpringLayout.WEST, scrollPane);
-		getContentPane().add(randomKeyButton);
+		
 		randomKeyButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				try {
 					wc.addNewKey();
-					updateTable();
+					updateKeyTable();
 				} catch (Exception e) { 
 					JOptionPane.showMessageDialog(null, "The key entered is not valid.", "****** Inavlid Key ******", JOptionPane.ERROR_MESSAGE);
 				}
 			}});
 		
-		//pack();
 		setVisible(true);
 	}
 	
+	/* ----------------------
+	 * Update Table Functions
+	 * ---------------------- */
+	
 	/**
-	 * Updates table
+	 * Updates user keys table
 	 * @throws BlockStoreException
 	 */
-	public void updateTable(){
-		DefaultTableModel model = (DefaultTableModel) table.getModel();
+	public void updateKeyTable(){
+		DefaultTableModel model = (DefaultTableModel) keyTable.getModel();
 		model.setRowCount(0);
 		if (wc.getKeys().isEmpty()) {
 			Object[] row = {"No keys."};
@@ -297,8 +334,9 @@ public class WalletGUI extends JFrame{
 		} else {
 			Iterator<ECKey> it = wc.getKeys().iterator();
 			while(it.hasNext()){
-				
-				Object[] row = {it.next().toString()};
+				ECKey currentKey = it.next();
+				//ssssssssssssssSystem.out.println(currentKey);
+				Object[] row = {currentKey.toAddress(wc.getWallet().getParams())};
 				model.addRow(row);
 			}
 		}
