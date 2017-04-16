@@ -8,12 +8,12 @@ import org.bitcoinj.utils.BriefLogFormatter;
 import groupSPV.model.CustomKit;
 import groupSPV.view.LoginGUI;
 
-/** BlockchainDriver is a driver class to initiate the downloading the Blockchain and display it.
+/** Driver class to initiate the login of the client.
  * @author Frank Fasola
  * @author James Donnell
  * @author Spencer Escalante
  * @author Trevor Silva */
-public class BlockchainDriver {
+public class Driver {
 
 	/** Main method.
 	 * @param args Argument stating "testnet" will use Bitcoin Test network. */
