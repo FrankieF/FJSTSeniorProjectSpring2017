@@ -2,6 +2,7 @@ package groupSPV.view;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
+import java.math.RoundingMode;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -12,6 +13,10 @@ import javax.swing.table.DefaultTableModel;
 
 import org.bitcoinj.core.Block;
 import org.bitcoinj.core.Transaction;
+
+import groupSPV.controller.ConversionRate;
+import groupSPV.controller.Utils;
+import groupSPV.model.BigCoin;
 
 /** ExtendedBlockchain is a popup window that is displayed upon clicking
  * the more info button in the BlockchainGUI

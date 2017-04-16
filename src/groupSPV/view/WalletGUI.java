@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextPane;
 import javax.swing.SpringLayout;
 import javax.swing.table.DefaultTableModel;
 
@@ -21,9 +22,6 @@ import org.bitcoinj.wallet.Wallet.BalanceType;
 import groupSPV.controller.ConversionRate;
 import groupSPV.controller.WalletController;
 import groupSPV.model.Friend;
-
-import javax.swing.JScrollBar;
-import javax.swing.JTextPane;
 
 public class WalletGUI extends JFrame{
 	
@@ -71,9 +69,8 @@ public class WalletGUI extends JFrame{
 		JLabel lblBitcoinValue = new JLabel("Bitcoin Value:");
 		getContentPane().add(lblBitcoinValue);
 		
-		ConversionRate rate = new ConversionRate();
-		rate.update();
-		JLabel lblBitcoinValueAmount = new JLabel("$"+rate.getConversionRate().toPlainString());
+		ConversionRate.update();
+		JLabel lblBitcoinValueAmount = new JLabel("$"+ConversionRate.getConversionRate().toPlainString());
 		getContentPane().add(lblBitcoinValueAmount);
 		
 		table = new JTable();

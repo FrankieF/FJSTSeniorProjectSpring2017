@@ -76,7 +76,7 @@ public class CustomKit {
 	}
 	
 	/** Starts downloading of Blockchain, holds until fully downloaded. */
-	public void startAndWait(User user) {
+	public void startAndWait() {
 		wak.startAsync(); // Start WAK
 		wak.awaitRunning(); // Wait for WAK to fully start
 		wc = new WalletController(wak.wallet(), user); // Create WC after done
