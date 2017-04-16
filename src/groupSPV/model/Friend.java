@@ -45,4 +45,12 @@ public class Friend implements Serializable {
 	public void setKey(String key) {
 		this.key = key;
 	}
+	
+	/***
+	 * Returns the name and key of the friend.
+	 */
+	@Override
+	public String toString() {
+		return this.name + ": " + this.key;
+	}
 }
