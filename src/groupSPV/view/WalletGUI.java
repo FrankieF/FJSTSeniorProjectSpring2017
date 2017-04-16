@@ -2,8 +2,14 @@ package groupSPV.view;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,11 +24,13 @@ import javax.swing.table.DefaultTableModel;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.TransactionConfidence.ConfidenceType;
 import org.bitcoinj.wallet.Wallet.BalanceType;
 
 import groupSPV.controller.ConversionRate;
 import groupSPV.controller.Utils;
 import groupSPV.controller.WalletController;
+import groupSPV.model.BigCoin;
 import groupSPV.model.Friend;
 
 public class WalletGUI extends JFrame{
@@ -48,6 +56,10 @@ public class WalletGUI extends JFrame{
 	private JTextPane keyPane;
 	private JButton addKeyButton;
 	private JButton randomKeyButton;
+	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private JButton copyKeyButton;
+	private JButton sendFriendButton;
+	private JButton copyTransactionButton;
 	
 	public WalletGUI(WalletController walletController){
 		super(walletController.getUser().getUsername() + "'s Wallet." + (Utils.isTestNetwork() ? " (TESTNET)" : ""));
@@ -85,12 +97,19 @@ public class WalletGUI extends JFrame{
 		publicKeyTextPane = new JTextPane();
 		addFriendButton = new JButton("Add Friend");
 		
+		copyKeyButton = new JButton("Copy Public Key");
+		sendFriendButton = new JButton("Send Friend BTC");
+		copyTransactionButton = new JButton("Copy Transaction Hash");
+		copyKeyButton.setVisible(false);
+		sendFriendButton.setVisible(false);
+		copyTransactionButton.setVisible(false);
+		
 		/* --------------------
 		 * Table Initialization
 		 * -------------------- */
 		keyTable = new JTable();
 		keyTable.setModel(new DefaultTableModel(new Object[][] {},
-			new String[] {"Keys"}) {
+			new String[] {"Public Keys", "Creation Time"}) {
 			private static final long serialVersionUID = 1L;
 			public boolean isCellEditable(int row, int column) {
 				return false;
@@ -101,7 +120,7 @@ public class WalletGUI extends JFrame{
 		
 		transactionTable = new JTable();
 		transactionTable.setModel(new DefaultTableModel(new Object[][] {},
-				new String[] {"Transactions"}) {
+				new String[] {"Transactions", "Depth", "BTC In", "BTC Out"}) {
 			private static final long serialVersionUID = 1L;
 			public boolean isCellEditable(int row, int column) {
 				return false;
@@ -123,7 +142,7 @@ public class WalletGUI extends JFrame{
 		
 		friendTable = new JTable();
 		friendTable.setModel(new DefaultTableModel(new Object[][] {},
-				new String[] {"Friend Keys"}) {
+				new String[] {"Friend", "Key"}) {
 			private static final long serialVersionUID = 1l;
 			public boolean isCellEditable(int row, int column) {
 				return false;
@@ -217,6 +236,14 @@ public class WalletGUI extends JFrame{
 		springLayout.putConstraint(SpringLayout.NORTH, randomKeyButton, 14, SpringLayout.SOUTH, addKeyButton);
 		springLayout.putConstraint(SpringLayout.EAST, randomKeyButton, -43, SpringLayout.WEST, keyScrollPane);
 		
+		springLayout.putConstraint(SpringLayout.NORTH, copyKeyButton, 14, SpringLayout.SOUTH, randomKeyButton);
+		springLayout.putConstraint(SpringLayout.WEST, copyKeyButton, 0, SpringLayout.WEST, randomKeyButton);
+		
+		springLayout.putConstraint(SpringLayout.NORTH, sendFriendButton, 14, SpringLayout.SOUTH, addFriendButton);
+		springLayout.putConstraint(SpringLayout.WEST, sendFriendButton, 0, SpringLayout.WEST, addFriendButton);
+		
+		springLayout.putConstraint(SpringLayout.NORTH, copyTransactionButton, 0, SpringLayout.NORTH, transactionScrollPane);
+		springLayout.putConstraint(SpringLayout.WEST, copyTransactionButton, 0, SpringLayout.WEST, copyKeyButton);
 		
 		/* -------------------
 		 * Component Placement
@@ -236,12 +263,16 @@ public class WalletGUI extends JFrame{
 		getContentPane().add(keyPane);
 		getContentPane().add(addKeyButton);
 		getContentPane().add(randomKeyButton);
+		getContentPane().add(copyKeyButton);
 		
 		getContentPane().add(friendNameLabel);
 		getContentPane().add(nameTextPane);
 		getContentPane().add(publicKeyLabel);
 		getContentPane().add(publicKeyTextPane);
 		getContentPane().add(addFriendButton);
+		getContentPane().add(sendFriendButton);
+		
+		getContentPane().add(copyTransactionButton);
 		
 		getContentPane().add(keyScrollPane);
 		getContentPane().add(transactionScrollPane);
@@ -258,6 +289,8 @@ public class WalletGUI extends JFrame{
 				if (!addressPane.getText().isEmpty() && !amountPane.getText().isEmpty())
 					try {
 						wc.sendBitcoin(addressPane.getText(), amountPane.getText());
+						addressPane.setText("");
+						amountPane.setText("");
 					} catch (Exception e) { 
 						JOptionPane.showMessageDialog(null, "The address or amount is not in the correct format.", "****** Invalid Input ******", JOptionPane.ERROR_MESSAGE);
 					}
@@ -272,6 +305,8 @@ public class WalletGUI extends JFrame{
 				if (!nameTextPane.getText().isEmpty() && !publicKeyTextPane.getText().isEmpty())
 					try {
 						wc.addFriend(nameTextPane.getText(), publicKeyTextPane.getText());
+						nameTextPane.setText("");
+						publicKeyTextPane.setText("");
 						updateFriendTable();
 					} catch (Exception e) { 
 						JOptionPane.showMessageDialog(null, "The address is not a valid address.", "****** Inavlid Addres ******", JOptionPane.ERROR_MESSAGE);
@@ -287,6 +322,7 @@ public class WalletGUI extends JFrame{
 				if (!keyPane.getText().isEmpty())
 					try {
 						wc.addExistingKeys(keyPane.getText());
+						keyPane.setText("");
 						updateKeyTable();
 					} catch (Exception e) { 
 						JOptionPane.showMessageDialog(null, "The key entered is not valid.", "****** Inavlid Key ******", JOptionPane.ERROR_MESSAGE);
@@ -301,12 +337,67 @@ public class WalletGUI extends JFrame{
 			public void actionPerformed(ActionEvent arg0) {
 				try {
 					wc.addNewKey();
+					keyPane.setText("");
 					updateKeyTable();
 				} catch (Exception e) { 
 					JOptionPane.showMessageDialog(null, "The key entered is not valid.", "****** Inavlid Key ******", JOptionPane.ERROR_MESSAGE);
 				}
 			}}
 		);
+		
+		copyKeyButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String selectedKey = (String) keyTable.getModel().getValueAt(keyTable.getSelectedRow(), 0);
+				Utils.sendToClipboard(selectedKey);
+				keyTable.getSelectionModel().clearSelection();
+				copyKeyButton.setVisible(false);
+			}
+		});
+		
+		copyTransactionButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String selectedTransaction = (String) transactionTable.getModel().getValueAt(transactionTable.getSelectedRow(), 0);
+				Utils.sendToClipboard(selectedTransaction);
+				transactionTable.getSelectionModel().clearSelection();
+				copyTransactionButton.setVisible(false);
+			}
+		});
+		
+		sendFriendButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String selectedFriendKey = (String) friendTable.getModel().getValueAt(friendTable.getSelectedRow(), 1);
+				addressPane.setText(selectedFriendKey);
+				friendTable.getSelectionModel().clearSelection();
+				sendFriendButton.setVisible(false);
+			}
+		});
+		
+		/* ---------------
+		 * Table Listeners
+		 * --------------- */
+		keyTable.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				copyKeyButton.setVisible(true);
+			}
+		});
+		
+		friendTable.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				sendFriendButton.setVisible(true);
+			}
+		});
+		
+		transactionTable.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				copyTransactionButton.setVisible(true);
+			}
+		});
 		
 		/* -------
 		 * Display
@@ -330,13 +421,16 @@ public class WalletGUI extends JFrame{
 		DefaultTableModel model = (DefaultTableModel) keyTable.getModel();
 		model.setRowCount(0);
 		if (wc.getKeys().isEmpty()) {
-			Object[] row = {"No keys."};
+			Object[] row = {"No keys.", ""};
 			model.addRow(row);
 		} else {
 			Iterator<ECKey> it = wc.getKeys().iterator();
 			while(it.hasNext()){
 				ECKey currentKey = it.next();
-				Object[] row = {currentKey.toAddress(wc.getWallet().getParams())};
+				Object[] row = {
+						currentKey.toAddress(wc.getWallet().getParams()).toString(),
+						dateFormat.format(new Date(TimeUnit.SECONDS.toMillis(currentKey.getCreationTimeSeconds())))
+				};
 				model.addRow(row);
 			}
 		}
@@ -348,13 +442,23 @@ public class WalletGUI extends JFrame{
 		DefaultTableModel model = (DefaultTableModel) transactionTable.getModel();
 		model.setRowCount(0);
 		if (wc.getTransactions().isEmpty()) {
-			Object[] row = {"No transactions."};
+			Object[] row = {"No transactions.", "", "", ""};
 			model.addRow(row);
 		}
 		Iterator<Transaction> it = wc.getTransactions().iterator();
 		while(it.hasNext()) {
-			Object[] row = {it.next().toString()};
-			model.addRow(row);
+			Transaction currentTransaction = it.next();
+			if (currentTransaction.getConfidence().getConfidenceType() == ConfidenceType.BUILDING) {
+				BigDecimal inBTC = Utils.setMinimumDecimalPlaces(new BigCoin(currentTransaction.getValueSentToMe(wc.getWallet())).getBitcoin(), 2);
+				BigDecimal outBTC = Utils.setMinimumDecimalPlaces(new BigCoin(currentTransaction.getValueSentFromMe(wc.getWallet())).getBitcoin(), 2);
+				Object[] row = {
+						currentTransaction.getHashAsString(),
+						currentTransaction.getConfidence().getDepthInBlocks(),
+						(inBTC.compareTo(BigDecimal.ZERO)==0 ? "" : inBTC),
+						(outBTC.compareTo(BigDecimal.ZERO)==0 ? "" : outBTC)
+				};
+				model.addRow(row);
+			}
 		}
 	}
 	
@@ -370,7 +474,7 @@ public class WalletGUI extends JFrame{
 		else {
 			Iterator<Transaction> it = wc.getPendingTransactions().iterator();
 			while(it.hasNext()) {
-				Object[] row = {it.next().toString()};
+				Object[] row = {it.next().getHashAsString()};
 				model.addRow(row);
 			}
 		}
@@ -382,13 +486,14 @@ public class WalletGUI extends JFrame{
 		DefaultTableModel model = (DefaultTableModel) friendTable.getModel();
 		model.setRowCount(0);
 		if (wc.getFriendsKeys().isEmpty()) {
-			Object[] row = {"No friend keys."};
+			Object[] row = {"No friend keys.", ""};
 			model.addRow(row);
 		}
 		else {
 			Iterator<Friend> it = wc.getFriendsKeys().iterator();
 			while(it.hasNext()) {
-				Object[] row = {it.next().toString()};
+				Friend currentFriend = it.next();
+				Object[] row = {currentFriend.getName(), currentFriend.getKey()};
 				model.addRow(row);
 			}
 		}

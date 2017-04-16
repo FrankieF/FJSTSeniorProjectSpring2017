@@ -3,6 +3,9 @@ package groupSPV.controller;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.math.BigDecimal;
 
 import groupSPV.model.CustomKit;
 import groupSPV.model.User;
@@ -18,7 +21,10 @@ import groupSPV.model.User;
  */
 public class Utils {
 	
+	/** Default path name, unrelated to appdata folder. */
 	private static final String defaultPath = "SeniorProject_Bitcoin_Client\\";
+	
+	/** Current network. */
 	private static boolean currentNetwork = CustomKit.MAINNET;
 	
 	/** Returns User's full 'AppData' path if Windows, blank string if not.
@@ -40,14 +46,21 @@ public class Utils {
 		return getSystemPath() + path;
 	}
 	
+	/** Returns full path based on supplied user and current network.
+	 * @param user Supplied User.
+	 * @return Full path. */
 	public static String getUserPath(User user) {
 		return getSystemPath(user.getUsername() + "\\");
 	}
 	
+	/** Set if test network.
+	 * @param testNetwork Boolean. */
 	public static void setTestNetwork(boolean testNetwork) {
 		currentNetwork = testNetwork;
 	}
 	
+	/** Determines if test network.
+	 * @return Boolean. */
 	public static boolean isTestNetwork() {
 		return currentNetwork;
 	}
@@ -57,5 +70,25 @@ public class Utils {
 	public static void setWindowCenterOfScreen(Window window) {
 		Dimension userScreenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		window.setLocation(userScreenSize.width/2-window.getSize().width/2, userScreenSize.height/2-window.getSize().height/2);
+	}
+	
+	/** Returns a formatted BigDecimal with the minimum nubmer of decimal places specified without rounding.
+	 * 
+	 * Usage:	Utils.setMinimumDecimalPlaces(new BigDecimal("5"), 2) --> 2.00
+	 * 			Utils.setMinimumDecimalPlaces(new BigDecimal("5.0675"), 2) --> 5.0675
+	 * 
+	 * @param bigDecimal BigDecimal to format.
+	 * @param minDecimalPlaces Minimum number of decimal places.
+	 * @return Formatted BigDecimal. */
+	public static BigDecimal setMinimumDecimalPlaces(BigDecimal bigDecimal, int minDecimalPlaces) {
+		return bigDecimal.setScale(Math.max(minDecimalPlaces, bigDecimal.scale()));
+	}
+
+	/** Sends String to User's clipboard.
+	 * @param string String to send to clipboard. */
+	public static void sendToClipboard(String string) {
+		StringSelection selection = new StringSelection(string);
+		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		clipboard.setContents(selection, selection);
 	}
 }
