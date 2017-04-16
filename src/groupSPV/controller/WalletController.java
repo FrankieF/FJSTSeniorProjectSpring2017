@@ -245,7 +245,7 @@ public class WalletController
 			public void onCoinsSent(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance) {
 				JOptionPane.showMessageDialog(null, "RECEIVED: " + tx.getValue(wallet).toFriendlyString() + " . NEW BALANCE: " 
 						+ wallet.getBalance().toFriendlyString(), "****** COINS SENT ******", JOptionPane.OK_OPTION);	
-				WalletGUI.lblCurrentBalanceAmount.setText(wallet.getBalance(BalanceType.AVAILABLE).toFriendlyString());
+				WalletGUI.updateBalance(wallet.getBalance(BalanceType.AVAILABLE));
 			}
 		});
 		// 			onTransactionConfidenceChanged(Wallet wallet, Transaction tx)

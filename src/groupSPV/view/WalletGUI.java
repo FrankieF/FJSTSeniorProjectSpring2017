@@ -39,16 +39,13 @@ public class WalletGUI extends JFrame{
 	private JScrollPane friendScrollPane;
 	private JButton sendButton;
 	private JButton addFriendButton;
-	public static JLabel lblCurrentBalanceAmount;
+	private static JLabel lblBitcoinValueAmount;
+	private static JLabel lblCurrentBalanceAmount;
 	private JTextPane addressPane;
 	private JTextPane amountPane;
-	private JLabel addressLabel, amountLabel;
-	private JLabel friendNameLabel;
-	private JLabel publicKeyLabel;
 	private JTextPane nameTextPane;
 	private JTextPane publicKeyTextPane;
 	private JTextPane keyPane;
-	private JLabel keyLabel;
 	private JButton addKeyButton;
 	private JButton randomKeyButton;
 	
@@ -60,34 +57,31 @@ public class WalletGUI extends JFrame{
 		getContentPane().setLayout(springLayout);
 		setBounds(400, 400, 600, 443);
 		
-		ConversionRate.update(); // Get most recent exchange rate.
-		
 		/* -----------------------
 		 * Component Initialization
 		 * ----------------------- */
 		wc = walletController;
 		
-		Coin availableBalance = wc.getBalance(BalanceType.AVAILABLE);
-		
 		JLabel lblCurrentBalance = new JLabel("Current Balance:");
-		lblCurrentBalanceAmount = new JLabel(availableBalance.toFriendlyString());
+		lblCurrentBalanceAmount = new JLabel();
 		JLabel lblBitcoinValue = new JLabel("Bitcoin Value:");
-		JLabel lblBitcoinValueAmount = new JLabel("$"+ConversionRate.convert(availableBalance).setScale(2, RoundingMode.HALF_UP));
+		lblBitcoinValueAmount = new JLabel();
+		updateBalance(wc.getBalance(BalanceType.AVAILABLE));
 		
 		addressPane = new JTextPane();
-		addressLabel = new JLabel("Address");
+		JLabel addressLabel = new JLabel("Address");
 		amountPane = new JTextPane();
-		amountLabel = new JLabel("Amount");
+		JLabel amountLabel = new JLabel("Amount");
 		sendButton = new JButton("Send Bitcoin");
 		
-		keyLabel = new JLabel("Key");
+		JLabel keyLabel = new JLabel("Key");
 		keyPane = new JTextPane();
 		addKeyButton = new JButton("Add Key");
 		randomKeyButton = new JButton("Add Random Key");
 		
-		friendNameLabel = new JLabel("Name");
+		JLabel friendNameLabel = new JLabel("Name");
 		nameTextPane = new JTextPane();
-		publicKeyLabel = new JLabel("Public Key");
+		JLabel publicKeyLabel = new JLabel("Public Key");
 		publicKeyTextPane = new JTextPane();
 		addFriendButton = new JButton("Add Friend");
 		
@@ -318,9 +312,15 @@ public class WalletGUI extends JFrame{
 	}
 	
 	/* ----------------------
-	 * Update Table Functions
+	 * Update Functions
 	 * ---------------------- */
 	
+	public static void updateBalance(Coin availableBalance) {
+		ConversionRate.update(); // Get most recent exchange rate.
+		lblCurrentBalanceAmount.setText(availableBalance.toFriendlyString());
+		lblBitcoinValueAmount.setText("$"+ConversionRate.convert(availableBalance).setScale(2, RoundingMode.HALF_UP));
+	}
+
 	/**
 	 * Updates user keys table
 	 * @throws BlockStoreException
