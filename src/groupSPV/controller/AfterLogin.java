@@ -24,7 +24,6 @@ public class AfterLogin {
 		
 		CustomKit kit = new CustomKit(Utils.getNetwork(), new File(Utils.getUserPath(user)), user);
 		kit.startAndWait();
-		
 		syncScreen.dispose();
 		
 		BlockchainGUI bcGUI = new BlockchainGUI(kit);

@@ -38,7 +38,7 @@ public class WalletController
 	private Wallet wallet;
 	private NetworkParameters params;
 	private User user;
-	
+
 	/***
 	 * @author Francis Fasola
 	 * Constructs a new wallet controller object.
@@ -337,5 +337,5 @@ public class WalletController
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}
-	}	
+	}
 }

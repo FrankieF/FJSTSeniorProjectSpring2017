@@ -2,7 +2,6 @@ package groupSPV.view;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
-import java.math.RoundingMode;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -13,10 +12,6 @@ import javax.swing.table.DefaultTableModel;
 
 import org.bitcoinj.core.Block;
 import org.bitcoinj.core.Transaction;
-
-import groupSPV.controller.ConversionRate;
-import groupSPV.controller.Utils;
-import groupSPV.model.BigCoin;
 
 /** ExtendedBlockchain is a popup window that is displayed upon clicking
  * the more info button in the BlockchainGUI
@@ -47,8 +42,6 @@ public class ExtendedBlockchain extends JFrame{
 	private JLabel lblMS;
 	private JLabel lblMR;
 	private JLabel lblW;
-	
-	
 	
 	public ExtendedBlockchain(int blockNumber, Block b) {
 		super("Block: " + blockNumber);
@@ -98,8 +91,7 @@ public class ExtendedBlockchain extends JFrame{
 		/	      Add Everything to 	   	  /
 		/		     contentpane			  /
 		/*************************************/
-		
-		getContentPane().add(scrollPane);
+    getContentPane().add(scrollPane);
 		getContentPane().add(lblAmount);
 		getContentPane().add(lblDifficulty);
 		getContentPane().add(lblNonce);
@@ -119,6 +111,13 @@ public class ExtendedBlockchain extends JFrame{
 		/	      Constraint setup		   	  /
 		/									  /
 		/*************************************/
+		//springLayout.putConstraint(SpringLayout.NORTH, scrollPane, 150, SpringLayout.NORTH, getContentPane());
+		//springLayout.putConstraint(SpringLayout.SOUTH, scrollPane, -10, SpringLayout.SOUTH, getContentPane());
+		//springLayout.putConstraint(SpringLayout.EAST, scrollPane, -10, SpringLayout.EAST, getContentPane());
+
+		//springLayout.putConstraint(SpringLayout.WEST, scrollPane, 0, SpringLayout.WEST, lblDifficulty);
+		//springLayout.putConstraint(SpringLayout.NORTH, lblDifficulty, 34, SpringLayout.NORTH, getContentPane());
+		//springLayout.putConstraint(SpringLayout.WEST, lblDifficulty, 10, SpringLayout.WEST, getContentPane());
 		springLayout.putConstraint(SpringLayout.NORTH, scrollPane, 175, SpringLayout.NORTH, getContentPane());
 		springLayout.putConstraint(SpringLayout.SOUTH, scrollPane, -10, SpringLayout.SOUTH, getContentPane());
 		springLayout.putConstraint(SpringLayout.EAST, scrollPane, -10, SpringLayout.EAST, getContentPane());
@@ -134,6 +133,14 @@ public class ExtendedBlockchain extends JFrame{
 		springLayout.putConstraint(SpringLayout.WEST, lblNonce, 0, SpringLayout.WEST, lblDifficulty);
 
 		springLayout.putConstraint(SpringLayout.NORTH, lblMessageSize, 6, SpringLayout.SOUTH, lblNonce);
+		
+    //springLayout.putConstraint(SpringLayout.WEST, lblMessageSize, 0, SpringLayout.WEST, lblDifficulty);
+		
+		//springLayout.putConstraint(SpringLayout.NORTH, lblMerkleRoot, 6, SpringLayout.SOUTH, lblMessageSize);
+		//springLayout.putConstraint(SpringLayout.WEST, lblMerkleRoot, 0, SpringLayout.WEST, lblDifficulty);
+		
+		//springLayout.putConstraint(SpringLayout.NORTH, lblWork, 6, SpringLayout.SOUTH, lblMerkleRoot);
+		//springLayout.putConstraint(SpringLayout.WEST, lblWork, 0, SpringLayout.WEST, lblDifficulty);
 		springLayout.putConstraint(SpringLayout.WEST, lblMessageSize, 0, SpringLayout.WEST, lblAmount);
 		
 		springLayout.putConstraint(SpringLayout.NORTH, lblMerkleRoot, 6, SpringLayout.SOUTH, lblMessageSize);
