@@ -1,5 +1,12 @@
 package groupSPV.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -31,8 +38,7 @@ public class WalletController
 	private Wallet wallet;
 	private NetworkParameters params;
 	private User user;
-  private String path;
-  
+
 	/***
 	 * @author Francis Fasola
 	 * Constructs a new wallet controller object.
@@ -44,7 +50,6 @@ public class WalletController
 		this.wallet = wallet;
 		params = wallet.getParams();
 		this.user = user;
-    this.path = Utils.getUserPath(user) + "friend.ser";
 		loadUser();		
 		addEventListeners();
 	}
@@ -332,58 +337,5 @@ public class WalletController
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}
-	}	
-=======
-
-// Potentially not needed, use LoginList.save() when want to save.
-//	/**
-//	 * @author Francis Fasola
-//	 * Loads the user into the WalletController.
-//	 * 
-//	 * @throws IOException If the file is not found.
-//	 * @throws Exception Any other errors.
-//	 */
-//	public void loadUser () throws IOException, Exception {
-//		try {
-//			ObjectInputStream stream = new ObjectInputStream(new FileInputStream(path));
-//			Object o = stream.readObject();
-//			if (o instanceof User)
-//				user = (User)o;
-//			else {
-//				stream.close();
-//				throw new Exception("File does not contain friend key data!"); 
-//			}
-//			stream.close();
-//		} catch (FileNotFoundException e) {
-//			throw new IOException("ERROR with file.", e);
-//		}catch (IOException e) {
-//			e.printStackTrace();
-//			throw new IOException("ERROR with file.", e);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			throw new Exception("Unkown error; friendKeys not loaded.", e);
-//		}
-//	}
-//	
-//	/***
-//	 * Saves the current user.
-//	 * @author Francis Fasola
-//	 * 
-//	 * @throws IOException If the file path is not valid.
-//	 * @throws Exception Any other exceptions.
-//	 */
-//	public void saveUser() throws IOException, Exception {		
-//		File file = new File(path);
-//		try {
-//			ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(file));
-//			stream.writeObject(user);
-//			stream.close();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//			throw new IOException("ERROR with file.", e);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			throw new Exception("Unkown error; friendKeys not saved!", e);
-//		}
-//	}
+	}
 }
