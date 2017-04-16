@@ -47,8 +47,8 @@ public class WalletGUI extends JFrame{
 	private JScrollPane friendScrollPane;
 	private JButton sendButton;
 	private JButton addFriendButton;
-	private static JLabel lblBitcoinValueAmount;
-	private static JLabel lblCurrentBalanceAmount;
+	private JLabel lblBitcoinValueAmount;
+	private JLabel lblCurrentBalanceAmount;
 	private JTextPane addressPane;
 	private JTextPane amountPane;
 	private JTextPane nameTextPane;
@@ -73,6 +73,7 @@ public class WalletGUI extends JFrame{
 		 * Component Initialization
 		 * ----------------------- */
 		wc = walletController;
+		wc.addListenersForGUI(this);
 		
 		JLabel lblCurrentBalance = new JLabel("Current Balance:");
 		lblCurrentBalanceAmount = new JLabel();
@@ -410,7 +411,7 @@ public class WalletGUI extends JFrame{
 	 * ---------------------- */
 	/** Updates the BTC and USD balance.
 	 * @param availableBalance Available balance to show. */
-	public static void updateBalance(Coin availableBalance) {
+	public void updateBalance(Coin availableBalance) {
 		ConversionRate.update(); // Get most recent exchange rate.
 		lblCurrentBalanceAmount.setText(availableBalance.toFriendlyString());
 		lblBitcoinValueAmount.setText("$" + ConversionRate.convert(availableBalance).setScale(2, RoundingMode.HALF_UP) + (Utils.isTestNetwork() ? " (TESTNET)" : ""));

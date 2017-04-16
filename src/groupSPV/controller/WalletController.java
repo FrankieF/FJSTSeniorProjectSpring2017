@@ -13,11 +13,20 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.JOptionPane;
 
-import org.bitcoinj.core.*;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.DumpedPrivateKey;
+import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.InsufficientMoneyException;
+import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.TransactionOutput;
+import org.bitcoinj.core.listeners.TransactionConfidenceEventListener;
 import org.bitcoinj.wallet.SendRequest;
 import org.bitcoinj.wallet.Wallet;
 import org.bitcoinj.wallet.Wallet.BalanceType;
 import org.bitcoinj.wallet.Wallet.SendResult;
+import org.bitcoinj.wallet.listeners.WalletCoinsReceivedEventListener;
 import org.bitcoinj.wallet.listeners.WalletCoinsSentEventListener;
 
 import com.google.common.util.concurrent.MoreExecutors;
@@ -245,7 +254,6 @@ public class WalletController
 			public void onCoinsSent(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance) {
 				JOptionPane.showMessageDialog(null, "RECEIVED: " + tx.getValue(wallet).toFriendlyString() + " . NEW BALANCE: " 
 						+ wallet.getBalance().toFriendlyString(), "****** COINS SENT ******", JOptionPane.OK_OPTION);	
-				WalletGUI.updateBalance(wallet.getBalance(BalanceType.AVAILABLE));
 			}
 		});
 		// 			onTransactionConfidenceChanged(Wallet wallet, Transaction tx)
@@ -258,6 +266,37 @@ public class WalletController
 		// 			onKeysAdded(List<ECKey> keys)
 		this.wallet.addKeyChainEventListener(e -> {
 			JOptionPane.showMessageDialog(null, "Key added.", "", JOptionPane.OK_OPTION);
+		});
+	}
+	
+	/** Add required listeners for WalletGUI updating.
+	 * @param walletGUI WalletGUI to update. */
+	public void addListenersForGUI(WalletGUI walletGUI) {
+		getWallet().addCoinsReceivedEventListener(new WalletCoinsReceivedEventListener() {
+			@Override
+			public void onCoinsReceived(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance) {
+				walletGUI.updatePendingTransactionTable();
+				walletGUI.updateTransactionTable();
+				walletGUI.updateBalance(wallet.getBalance(BalanceType.AVAILABLE));
+			}
+		});
+		
+		getWallet().addCoinsSentEventListener(new WalletCoinsSentEventListener() {
+			@Override
+			public void onCoinsSent(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance) {
+				walletGUI.updatePendingTransactionTable();
+				walletGUI.updateTransactionTable();
+				walletGUI.updateBalance(wallet.getBalance(BalanceType.AVAILABLE));
+			}
+		});
+		
+		getWallet().addTransactionConfidenceEventListener(new TransactionConfidenceEventListener() {
+			@Override
+			public void onTransactionConfidenceChanged(Wallet wallet, Transaction tx) {
+				walletGUI.updatePendingTransactionTable();
+				walletGUI.updateTransactionTable();
+				walletGUI.updateBalance(wallet.getBalance(BalanceType.AVAILABLE));
+			}
 		});
 	}
 	
