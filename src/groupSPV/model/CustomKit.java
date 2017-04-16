@@ -50,7 +50,7 @@ public class CustomKit {
 	private static final String testFilePrefix = "forwarding-service-testnet";
 	
 	/** Bitcoin network selection integer. */
-	public static final int MAINNET = 0, TESTNET = 1;
+	public static final boolean MAINNET = false, TESTNET = true;
 	
 	/* -----------------------
 	 *          SETUP
@@ -67,7 +67,7 @@ public class CustomKit {
 	 * @param network Network selection integer.
 	 * @param saveLocation File object of folder location to save client files.
 	 * @param User for wallet. */
-	public CustomKit(int network, File saveLocation, User user) { 
+	public CustomKit(boolean network, File saveLocation, User user) { 
 		if (network == TESTNET)
 			wak = new WalletAppKit(TestNet3Params.get(), saveLocation, testFilePrefix);
 		else

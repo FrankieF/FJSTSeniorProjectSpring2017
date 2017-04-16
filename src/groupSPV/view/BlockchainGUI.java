@@ -17,6 +17,7 @@ import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.core.StoredBlock;
 import org.bitcoinj.store.BlockStoreException;
 
+import groupSPV.controller.Utils;
 import groupSPV.model.CustomKit;
 
 /** BlockchainGUI is the user interface that appears after login
@@ -46,7 +47,7 @@ public class BlockchainGUI extends JFrame {
 	/** Creates and displays the BlockchainGUI.
 	 * @param kit CustomKit to utilize. */
 	public BlockchainGUI(CustomKit kit) {
-		super("Blockchain");
+		super("Blockchain" + (Utils.isTestNetwork() ? " (TESTNET)" : ""));
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		SpringLayout springLayout = new SpringLayout();

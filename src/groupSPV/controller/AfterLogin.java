@@ -22,7 +22,7 @@ public class AfterLogin {
 	public static void startGUI(User user) {
 		JFrame syncScreen = new SyncGUI("Updating blockchain for " + user.getUsername() + " ...");
 		
-		CustomKit kit = new CustomKit(Utils.getNetwork(), new File(Utils.getUserPath(user)), user);
+		CustomKit kit = new CustomKit(Utils.isTestNetwork(), new File(Utils.getUserPath(user)), user);
 		kit.startAndWait();
 		syncScreen.dispose();
 		

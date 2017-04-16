@@ -49,7 +49,7 @@ public class ExtendedBlockchain extends JFrame{
 	private JLabel lblW;
 	
 	public ExtendedBlockchain(int blockNumber, Block b) {
-		super("Block: " + blockNumber);
+		super("Block: " + blockNumber + (Utils.isTestNetwork() ? " (TESTNET)" : ""));
 		fullBlock = b;
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(new Rectangle(new Dimension(550,525)));

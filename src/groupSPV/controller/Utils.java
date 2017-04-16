@@ -19,7 +19,7 @@ import groupSPV.model.User;
 public class Utils {
 	
 	private static final String defaultPath = "SeniorProject_Bitcoin_Client\\";
-	private static int currentNetwork = CustomKit.MAINNET;
+	private static boolean currentNetwork = CustomKit.MAINNET;
 	
 	/** Returns User's full 'AppData' path if Windows, blank string if not.
 	 *  @return 'AppData' full path. */
@@ -44,11 +44,11 @@ public class Utils {
 		return getSystemPath(user.getUsername() + "\\");
 	}
 	
-	public static void setNetwork(int network) {
-		currentNetwork = network;
+	public static void setTestNetwork(boolean testNetwork) {
+		currentNetwork = testNetwork;
 	}
 	
-	public static int getNetwork() {
+	public static boolean isTestNetwork() {
 		return currentNetwork;
 	}
 	

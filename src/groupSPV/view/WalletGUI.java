@@ -18,10 +18,10 @@ import javax.swing.table.DefaultTableModel;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.Transaction;
-import org.bitcoinj.store.BlockStoreException;
 import org.bitcoinj.wallet.Wallet.BalanceType;
 
 import groupSPV.controller.ConversionRate;
+import groupSPV.controller.Utils;
 import groupSPV.controller.WalletController;
 import groupSPV.model.Friend;
 
@@ -50,7 +50,7 @@ public class WalletGUI extends JFrame{
 	private JButton randomKeyButton;
 	
 	public WalletGUI(WalletController walletController){
-		super(walletController.getUser().getUsername() + "'s Wallet.");
+		super(walletController.getUser().getUsername() + "'s Wallet." + (Utils.isTestNetwork() ? " (TESTNET)" : ""));
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		SpringLayout springLayout = new SpringLayout();
@@ -186,7 +186,6 @@ public class WalletGUI extends JFrame{
 		springLayout.putConstraint(SpringLayout.NORTH, amountLabel, 0, SpringLayout.NORTH, amountPane);
 		springLayout.putConstraint(SpringLayout.EAST, amountLabel, -12, SpringLayout.WEST, amountPane);
 		
-		
 		springLayout.putConstraint(SpringLayout.NORTH, friendNameLabel, 0, SpringLayout.NORTH, friendScrollPane);
 		springLayout.putConstraint(SpringLayout.WEST, friendNameLabel, 6, SpringLayout.EAST, friendScrollPane);
 		
@@ -253,7 +252,7 @@ public class WalletGUI extends JFrame{
 		/* ----------------
 		 * Button Listeners
 		 * ---------------- */
-		sendButton.addActionListener(new ActionListener(){
+		sendButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (!addressPane.getText().isEmpty() && !amountPane.getText().isEmpty())
@@ -263,11 +262,11 @@ public class WalletGUI extends JFrame{
 						JOptionPane.showMessageDialog(null, "The address or amount is not in the correct format.", "****** Invalid Input ******", JOptionPane.ERROR_MESSAGE);
 					}
 				else
-					JOptionPane.showMessageDialog(null, "Select an address to send to..", 
-												"****** No Address selected ******", JOptionPane.OK_OPTION);
-			}});
+					JOptionPane.showMessageDialog(null, "Select an address to send to..", "****** No Address selected ******", JOptionPane.OK_OPTION);
+			}}
+		);
 		
-		addFriendButton.addActionListener(new ActionListener(){
+		addFriendButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (!nameTextPane.getText().isEmpty() && !publicKeyTextPane.getText().isEmpty())
@@ -278,11 +277,11 @@ public class WalletGUI extends JFrame{
 						JOptionPane.showMessageDialog(null, "The address is not a valid address.", "****** Inavlid Addres ******", JOptionPane.ERROR_MESSAGE);
 					}
 				else
-					JOptionPane.showMessageDialog(null, "Enter a name and address for the friend.", 
-												"****** No Friend Information ******", JOptionPane.OK_OPTION);
-			}});
+					JOptionPane.showMessageDialog(null, "Enter a name and address for the friend.", "****** No Friend Information ******", JOptionPane.OK_OPTION);
+			}}
+		);
 		
-		addKeyButton.addActionListener(new ActionListener(){
+		addKeyButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (!keyPane.getText().isEmpty())
@@ -293,11 +292,11 @@ public class WalletGUI extends JFrame{
 						JOptionPane.showMessageDialog(null, "The key entered is not valid.", "****** Inavlid Key ******", JOptionPane.ERROR_MESSAGE);
 					}
 				else
-					JOptionPane.showMessageDialog(null, "Enter your private key.", 
-												"****** No Key ******", JOptionPane.OK_OPTION);
-			}});
+					JOptionPane.showMessageDialog(null, "Enter your private key.", "****** No Key ******", JOptionPane.OK_OPTION);
+			}}
+		);
 		
-		randomKeyButton.addActionListener(new ActionListener(){
+		randomKeyButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				try {
@@ -306,25 +305,27 @@ public class WalletGUI extends JFrame{
 				} catch (Exception e) { 
 					JOptionPane.showMessageDialog(null, "The key entered is not valid.", "****** Inavlid Key ******", JOptionPane.ERROR_MESSAGE);
 				}
-			}});
+			}}
+		);
 		
+		/* -------
+		 * Display
+		 * ------- */
 		setVisible(true);
 	}
 	
 	/* ----------------------
 	 * Update Functions
 	 * ---------------------- */
-	
+	/** Updates the BTC and USD balance.
+	 * @param availableBalance Available balance to show. */
 	public static void updateBalance(Coin availableBalance) {
 		ConversionRate.update(); // Get most recent exchange rate.
 		lblCurrentBalanceAmount.setText(availableBalance.toFriendlyString());
-		lblBitcoinValueAmount.setText("$"+ConversionRate.convert(availableBalance).setScale(2, RoundingMode.HALF_UP));
+		lblBitcoinValueAmount.setText("$" + ConversionRate.convert(availableBalance).setScale(2, RoundingMode.HALF_UP) + (Utils.isTestNetwork() ? " (TESTNET)" : ""));
 	}
 
-	/**
-	 * Updates user keys table
-	 * @throws BlockStoreException
-	 */
+	/**  Updates user keys table */
 	public void updateKeyTable(){
 		DefaultTableModel model = (DefaultTableModel) keyTable.getModel();
 		model.setRowCount(0);
@@ -335,17 +336,14 @@ public class WalletGUI extends JFrame{
 			Iterator<ECKey> it = wc.getKeys().iterator();
 			while(it.hasNext()){
 				ECKey currentKey = it.next();
-				//ssssssssssssssSystem.out.println(currentKey);
 				Object[] row = {currentKey.toAddress(wc.getWallet().getParams())};
 				model.addRow(row);
 			}
 		}
 	}
 	
-	/***
-	 * Adds the transactions into the table.
-	 * @author Francis Fasola
-	 */
+	/*** Adds the transactions into the table.
+	 * @author Francis Fasola */
 	public void updateTransactionTable() {
 		DefaultTableModel model = (DefaultTableModel) transactionTable.getModel();
 		model.setRowCount(0);
@@ -360,10 +358,8 @@ public class WalletGUI extends JFrame{
 		}
 	}
 	
-	/***
-	 * Adds the pending transactions into the table.
-	 * @author Francis Fasola
-	 */
+	/*** Adds the pending transactions into the table.
+	 * @author Francis Fasola */
 	public void updatePendingTransactionTable() {
 		DefaultTableModel model = (DefaultTableModel) pendingTransactionTable.getModel();
 		model.setRowCount(0);
@@ -380,10 +376,8 @@ public class WalletGUI extends JFrame{
 		}
 	}
 	
-	/***
-	 * Adds the pending transactions into the table.
-	 * @author Francis Fasola
-	 */
+	/*** Adds the pending transactions into the table.
+	 * @author Francis Fasola */
 	public void updateFriendTable() {
 		DefaultTableModel model = (DefaultTableModel) friendTable.getModel();
 		model.setRowCount(0);

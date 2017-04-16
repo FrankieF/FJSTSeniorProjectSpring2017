@@ -75,7 +75,7 @@ public class LoginGUI extends JFrame {
 		welcomeLabel = new JLabel();
 
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		setTitle("Login to Bitcoin Client");
+		setTitle("Client Login" + (Utils.isTestNetwork() ? " (TESTNET)" : ""));
 
 		userLabel.setText("Username:");
 

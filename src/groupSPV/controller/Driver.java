@@ -21,10 +21,8 @@ public class Driver {
 		BriefLogFormatter.init(); // Sets logging format, default for now
 		ignoreSELF4JErrors();
 		
-		if (args.length > 0 && args[0].equals("testnet")) {
-			System.out.println("TESTNET IN USE!!!");
-			Utils.setNetwork(CustomKit.TESTNET);
-		}
+		if (args.length > 0 && args[0].equals("testnet"))
+			Utils.setTestNetwork(CustomKit.TESTNET);
 		
 		File tmpFile = new File(Utils.getSystemPath());
 		if(!tmpFile.exists())
