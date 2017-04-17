@@ -77,13 +77,13 @@ public class CustomKit {
 	
 	/** Starts downloading of Blockchain, holds until fully downloaded. */
 	public void startAndWait() {
-		JLabel loadingLabel = new JLabel();
-		loadingLabel.setText("Loading...");
+		//JLabel loadingLabel = new JLabel();
+		//loadingLabel.setText("Loading...");
 		wak.startAsync(); // Start WAK
-		loadingLabel.setVisible(true);
+		//loadingLabel.setVisible(true);
 		wak.awaitRunning(); // Wait for WAK to fully start
 		wc = new WalletController(wak.wallet(), user); // Create WC after done
-		loadingLabel.setVisible(false);
+		//loadingLabel.setVisible(false);
 	}
 	
 	/** Stops synchronizing processes, holds until fully stopped. */
