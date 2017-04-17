@@ -72,6 +72,7 @@ public class LoginGUI extends JFrame {
 		registerBtn = new JButton();
 		passwordField = new JPasswordField();
 		welcomeLabel = new JLabel();
+		loadingLabel = new JLabel();
 
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		setTitle("Client Login" + (Utils.isTestNetwork() ? " (TESTNET)" : ""));
@@ -79,6 +80,8 @@ public class LoginGUI extends JFrame {
 		userLabel.setText("Username:");
 
 		passwordLabel.setText("Password:");
+		
+		loadingLabel.setText("Loading...");
 
 		loginBtn.setText("Login");
 		loginBtn.addActionListener(new ActionListener() {
@@ -142,17 +145,28 @@ public class LoginGUI extends JFrame {
 		pack();
 	}// </editor-fold>
 
-	private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {
-		User user;
-		if((user = LoginList.verifyUser(userField.getText(), new String(passwordField.getPassword()))) != null) {
-			this.dispose();
-			Utils.startGUI(user);
-		} else{
-			JOptionPane.showMessageDialog(null,"Either Username or Password is incorrect", "Login Error",JOptionPane.ERROR_MESSAGE);
-			userField.setText("");
-			passwordField.setText("");
+		private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {
+		loadingLabel.setVisible(true);
+		int i = 0;
+		while(i < 3)
+			if(i == 3)
+			{
+				if((user = LoginList.verifyUser(userField.getText(), new String(passwordField.getPassword()))) != null) {
+					this.dispose();
+					Utils.startGUI(user);
+					loadingLabel.setVisible(false);
+				} else{
+					JOptionPane.showMessageDialog(null,"Either Username or Password is incorrect", "Login Error",JOptionPane.ERROR_MESSAGE);
+					userField.setText("");
+					passwordField.setText("");
+				}
+			}
+			else
+			{
+				i++;
+			}
 		}
-	}
+	
 
 	private void registerBtnActionPerformed(java.awt.event.ActionEvent evt) {
 		new RegisterGUI();
