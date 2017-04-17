@@ -143,6 +143,7 @@ GroupLayout layout = new GroupLayout(getContentPane());
  	}// </editor-fold>
 
 		private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {
+			User user;
 				if((user = LoginList.verifyUser(userField.getText(), new String(passwordField.getPassword()))) != null) {
 					this.dispose();
 					Utils.startGUI(user);
@@ -151,7 +152,6 @@ GroupLayout layout = new GroupLayout(getContentPane());
 					userField.setText("");
 					passwordField.setText("");
 				}
-			}
 		}
 	
 
