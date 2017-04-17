@@ -15,7 +15,6 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 
-import groupSPV.controller.AfterLogin;
 import groupSPV.controller.LoginList;
 import groupSPV.controller.Utils;
 import groupSPV.model.User;
@@ -147,7 +146,7 @@ public class LoginGUI extends JFrame {
 		User user;
 		if((user = LoginList.verifyUser(userField.getText(), new String(passwordField.getPassword()))) != null) {
 			this.dispose();
-			AfterLogin.startGUI(user);
+			Utils.startGUI(user);
 		} else{
 			JOptionPane.showMessageDialog(null,"Either Username or Password is incorrect", "Login Error",JOptionPane.ERROR_MESSAGE);
 			userField.setText("");

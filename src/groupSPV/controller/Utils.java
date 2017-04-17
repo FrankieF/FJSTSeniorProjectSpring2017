@@ -5,10 +5,16 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.io.File;
 import java.math.BigDecimal;
 
+import javax.swing.JFrame;
+
 import groupSPV.model.CustomKit;
+import groupSPV.model.CustomNBBL;
 import groupSPV.model.User;
+import groupSPV.view.BlockchainGUI;
+import groupSPV.view.SyncGUI;
 
 /**
  * @author Frank Fasola
@@ -51,6 +57,19 @@ public class Utils {
 	 * @return Full path. */
 	public static String getUserPath(User user) {
 		return getSystemPath(user.getUsername() + "\\");
+	}
+	
+	/** Starts BlockchainGUI with particular user.
+	 * @param user User to start GUI with. */
+	public static void startGUI(User user) {
+		JFrame syncScreen = new SyncGUI("Updating blockchain for " + user.getUsername() + " ...");
+		
+		CustomKit kit = new CustomKit(Utils.isTestNetwork(), new File(getUserPath(user)), user);
+		kit.startAndWait();
+		syncScreen.dispose();
+		
+		BlockchainGUI bcGUI = new BlockchainGUI(kit);
+		kit.addNewBestBlockListener(new CustomNBBL(bcGUI));
 	}
 	
 	/** Set if test network.
