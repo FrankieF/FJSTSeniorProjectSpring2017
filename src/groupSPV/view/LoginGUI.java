@@ -82,6 +82,7 @@ public class LoginGUI extends JFrame {
 		passwordLabel.setText("Password:");
 		
 		loadingLabel.setText("Loading...");
+		loadingLabel.setVisible(false);
 
 		loginBtn.setText("Login");
 		loginBtn.addActionListener(new ActionListener() {
@@ -100,50 +101,55 @@ public class LoginGUI extends JFrame {
 		welcomeLabel.setFont(new java.awt.Font("Sylfaen", 1, 24)); // NOI18N
 		welcomeLabel.setText("Welcome");
 
-		GroupLayout layout = new GroupLayout(getContentPane());
-		getContentPane().setLayout(layout);
-		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(layout
-				.createSequentialGroup().addGap(35, 35, 35)
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-						.addComponent(welcomeLabel, GroupLayout.PREFERRED_SIZE, 178,
-								GroupLayout.PREFERRED_SIZE)
-						.addGroup(layout
-								.createSequentialGroup()
-								.addGroup(
-										layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-												.addComponent(userLabel).addComponent(passwordLabel))
-								.addGap(18, 18, 18)
-								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING, false)
-										.addComponent(passwordField, GroupLayout.Alignment.LEADING)
-										.addGroup(layout.createSequentialGroup().addComponent(registerBtn)
-												.addGap(21, 21, 21).addComponent(loginBtn))
-										.addComponent(userField))))
-				.addContainerGap(54, Short.MAX_VALUE)));
-		layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup().addGap(42, 42, 42)
-						.addComponent(welcomeLabel, GroupLayout.PREFERRED_SIZE, 35,
-								GroupLayout.PREFERRED_SIZE)
-						.addGap(18, 18, 18)
-						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-								.addComponent(userLabel).addComponent(userField, GroupLayout.PREFERRED_SIZE,
-										GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-						.addGap(18, 18, 18)
-						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-								.addComponent(passwordLabel).addComponent(passwordField,
-										GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-										GroupLayout.PREFERRED_SIZE))
-						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
-						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-								.addComponent(loginBtn).addComponent(registerBtn))
-						.addGap(36, 36, 36)));
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(35, 35, 35)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(welcomeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(userLabel)
+                            .addComponent(passwordLabel))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(passwordField, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(registerBtn)
+                                .addGap(21, 21, 21)
+                                .addComponent(loginBtn))
+                            .addComponent(userField))))
+                .addContainerGap(54, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(loadingLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(42, 42, 42)
+                .addComponent(welcomeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(userLabel)
+                    .addComponent(userField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(passwordLabel)
+                    .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(loginBtn)
+                    .addComponent(registerBtn))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(loadingLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
 
-		userField.getAccessibleContext().setAccessibleName("usernameTextField");
-		userField.getAccessibleContext().setAccessibleDescription("");
-
-		getRootPane().setDefaultButton(loginBtn);
-		
-		pack();
-	}// </editor-fold>
+        pack();
+    }// </editor-fold>
 
 		private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {
 		loadingLabel.setVisible(true);
