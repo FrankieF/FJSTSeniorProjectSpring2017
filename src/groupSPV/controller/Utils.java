@@ -62,11 +62,11 @@ public class Utils {
 	/** Starts BlockchainGUI with particular user.
 	 * @param user User to start GUI with. */
 	public static void startGUI(User user) {
-		JFrame syncScreen = new SyncGUI("Updating blockchain for " + user.getUsername() + " ...");
+		//JFrame syncScreen = new SyncGUI("Updating blockchain for " + user.getUsername() + " ...");
 		
 		CustomKit kit = new CustomKit(Utils.isTestNetwork(), new File(getUserPath(user)), user);
 		kit.startAndWait();
-		syncScreen.dispose();
+		//syncScreen.dispose();
 		
 		BlockchainGUI bcGUI = new BlockchainGUI(kit);
 		kit.addNewBestBlockListener(new CustomNBBL(bcGUI));
