@@ -8,13 +8,11 @@ import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Transaction;
 
 /** Bitcoin Coin implementation with BigDecimal.
- * 
  * @author Frank Fasola
  * @author James Donnell
  * @author Spencer Escalante
  * @author Trevor Silva */
 public class BigCoin implements Comparable<BigCoin>, Comparator<BigCoin> {
-
 	/** Represents total amount of Satoshis in the current BigCoin. */
 	private BigDecimal satoshi;
 	

@@ -102,6 +102,8 @@ public class LoginList {
 		}
 	}
 
+	/** Gets the full path and file for the User login.
+	 * @return Full path. */
 	private static String getSaveFile() {
 		return Utils.getSystemPath("loginList.ser");
 	}

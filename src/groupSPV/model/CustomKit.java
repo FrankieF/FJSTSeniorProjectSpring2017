@@ -23,18 +23,16 @@ import groupSPV.controller.WalletController;
 
 /** CustomKit is a "Facade" class to the bitcoinj WalletAppKit class.
  * It simplifies working with the WalletAppKit class for our specific project needs.
-*
-* @author Frank Fasola
-* @author James Donnell
-* @author Spencer Escalante
-* @author Trevor Silva */
+ * @author Frank Fasola
+ * @author James Donnell
+ * @author Spencer Escalante
+ * @author Trevor Silva */
 public class CustomKit {
-
 	/** WalletAppKit object to simplify. */
 	private WalletAppKit wak;
-	
+	/** WalletController object, not active until CustomKit is started. */
 	private WalletController wc;
-	
+	/** Current user object. */
 	private User user;
 	
 	/** List of all current NewBestBlockListeners. */
@@ -57,7 +55,7 @@ public class CustomKit {
 	 * ----------------------- */
 	/** Constructor for creating a CustomKit at a particular saveLocation. Uses default bitcoin network.
 	 * @param saveLocation File object of folder location to save client files.
-	 * @param User for wallet. */
+	 * @param user for wallet. */
 	public CustomKit(File saveLocation, User user) {
 		this(MAINNET, saveLocation, user);
 	}
@@ -66,7 +64,7 @@ public class CustomKit {
 	 * TestNet if 1, MainNet if anything else.
 	 * @param network Network selection integer.
 	 * @param saveLocation File object of folder location to save client files.
-	 * @param User for wallet. */
+	 * @param user for wallet. */
 	public CustomKit(boolean network, File saveLocation, User user) { 
 		if (network == TESTNET)
 			wak = new WalletAppKit(TestNet3Params.get(), saveLocation, testFilePrefix);
@@ -77,13 +75,9 @@ public class CustomKit {
 	
 	/** Starts downloading of Blockchain, holds until fully downloaded. */
 	public void startAndWait() {
-		//JLabel loadingLabel = new JLabel();
-		//loadingLabel.setText("Loading...");
 		wak.startAsync(); // Start WAK
-		//loadingLabel.setVisible(true);
 		wak.awaitRunning(); // Wait for WAK to fully start
 		wc = new WalletController(wak.wallet(), user); // Create WC after done
-		//loadingLabel.setVisible(false);
 	}
 	
 	/** Stops synchronizing processes, holds until fully stopped. */
@@ -213,7 +207,7 @@ public class CustomKit {
 		return info[2].split(":")[1];
 	}
 	
-	/** Returns Vervion of StoredBlock on disk.
+	/** Returns Version of StoredBlock on disk.
 	 * @param block block that is in question.
 	 * @return String Time of the BlockStore. */
 	public String getBlockStoreTime(StoredBlock block) {

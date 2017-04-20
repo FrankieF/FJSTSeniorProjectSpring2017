@@ -35,26 +35,23 @@ import groupSPV.model.Friend;
 import groupSPV.model.User;
 import groupSPV.view.WalletGUI;
 
-/**
+/** Interfaces between the client and the wallet by wrapping the wallet methods.
  * @author Frankie Fasola
  * @author James Donnell
  * @author Spencer Escalante
- * @author Trevor Silva
- * Interfaces between the client and the wallet by wrapping the wallet methods.
- */
-public class WalletController
-{
+ * @author Trevor Silva  */
+public class WalletController {
+	/** Current Wallet object. */
 	private Wallet wallet;
+	/** Current NetworkParameter object. */
 	private NetworkParameters params;
+	/** Current User object. */
 	private User user;
 
-	/***
-	 * @author Francis Fasola
-	 * Constructs a new wallet controller object.
-	 * @param params The network the wallet runs on.
-	 * @throws Exception 
-	 * @throws IOException 
-	 */
+	/** Constructs a new wallet controller object.
+	 * @param wallet The current wallet.
+	 * @param user The current user.
+	 * @author Francis Fasola */
 	public WalletController (Wallet wallet, User user) {
 		this.wallet = wallet;
 		params = wallet.getParams();
@@ -63,110 +60,90 @@ public class WalletController
 		addEventListeners();
 	}
 	
-	/**
-	 * Only used for internal class testing.
-	 * @param params
-	 */
+	/** Only used for internal class testing.
+	 * @param params Network Parameters. */
 	public WalletController (NetworkParameters params) {
 		wallet = new Wallet(params);
 		this.params = params;
 		addEventListeners();
 	}
 	
-	/**
+	/** Get the Wallet object.
 	 * @author Francis Fasola
-	 * @return The wallet.
-	 */
+	 * @return The wallet. */
 	public Wallet getWallet() {
 		return this.wallet;
 	}
 	
-	/**
-	 * @author Francis Fasola
-	 * Returns The balance of the specified by the type passed in. The type
+	/** Returns The balance of the specified by the type passed in. The type
 	 * can be left null to receive available balance of the wallet. 
-	 * @return The balance of the wallet.
-	 */
+	 * @author Francis Fasola
+	 * @param type BalanceType to retrieve.
+	 * @return The balance of the wallet. */
 	public Coin getBalance(Wallet.BalanceType type) {
 		return type == null ? this.wallet.getBalance() : this.wallet.getBalance(type);		
 	}
 	
-	/***
+	/** Adds an address to the wallet.
 	 * @author Francis Fasola
-	 * Adds an address to the wallet.
-	 * @param address The address to add to the wallet.
-	 */
+	 * @param address The address to add to the wallet. */
 	public void addAddress (Address address) {
 		this.wallet.addWatchedAddress(address);
 	}
 	
-	/***
+	/** Allows a user to change the password to their wallet.
 	 * @author Francis Fasola
-	 * Allows a user to change the password to their wallet.
-	 * 
 	 * @param newPassword The new password.
-	 * @param oldPassword The old password.
-	 */
+	 * @param oldPassword The old password. */
 	public void changePassword (CharSequence newPassword, CharSequence oldPassword) {
 		this.wallet.changeEncryptionPassword(oldPassword, newPassword);
 	}
 	
-	/***
+	/** Gets a list of transactions starting with the most recent.
 	 * @author Francis Fasola
-	 * Returns a list of transactions starting with the most recent.
-	 */
+	 * @return List of transactions. */
 	public List<Transaction> getTransactions() {
 		return this.wallet.getTransactionsByTime();
 	}
 	
-	/***
+	/** Gets a list of all pending transactions.
 	 * @author Francis Fasola
-	 * @return The pending transactions in the wallet.
-	 */
+	 * @return The pending transactions in the wallet. */
 	public Collection<Transaction> getPendingTransactions() {
 		return this.wallet.getPendingTransactions();
 	}
 	
-	/***
+	/** Returns a list of transaction outputs that represent the unspent amount in the wallet.
 	 * @author Francis Fasola
-	 * Returns a list of transaction outputs that represent the unspent amount in the wallet.
-	 */
+	 * @return List of TransactionOutput objects. */
 	public List<TransactionOutput> getUnspent() {
 		return this.wallet.getUnspents();
 	}
 	
-	/***
+	/** Returns the description of the wallet.
 	 * @author Francis Fasola
-	 * Returns the description of the wallet.
-	 */
+	 * @return Description as string. */
 	public String getDescription() {
 		return this.wallet.getDescription();
 	}
 	
-	/***
+	/** Allows the user to change the description of the wallet.
 	 * @author Francis Fasola
-	 * Allows the user to change the description of the wallet.
-	 * @param desc The new description of the wallet.
-	 */
+	 * @param desc The new description of the wallet. */
 	public void setDescription(String desc) {
 		this.wallet.setDescription(desc);
 	}
 	
-	/**
+	/** Get the wallet version.
 	 * @author Francis Fasola
-	 * @return The version of the wallet.
-	 */
+	 * @return The version of the wallet. */
 	public int getVersion () {
 		return this.wallet.getVersion();
 	}
 	
-	/**
+	/** Adds multiple pre-existing keys to the wallet.
 	 * @author Francis Fasola
-	 * Adds multiple pre-existing keys to the wallet.
-	 * 
-	 * @param params The network parameters of the client.
-	 * @param key String representation of the private key(s).
-	 */
+	 * @param keys String representation of the private key(s). */
 	public void addExistingKeys(String... keys) {
 		for (String key : keys) {
 			DumpedPrivateKey _key = DumpedPrivateKey.fromBase58(params, key);
@@ -174,12 +151,8 @@ public class WalletController
 		}
 	}
 	
-	/**
-	 * @author Francis Fasola
-	 * Creates a new ECKey (Eliptic Curve) and adds it to the wallet.
-	 * 
-	 * @param params Network parameters for the wallet.
-	 */
+	/** Creates a new ECKey (Eliptic Curve) and adds it to the wallet.
+	 * @author Francis Fasola */
 	public void addNewKey() {
 		ECKey key = new ECKey();
 		this.wallet.importKey(key);
@@ -187,30 +160,26 @@ public class WalletController
 		System.out.println("Private key: " + key.getPrivateKeyEncoded(params));
 	}
 	
-	/**
+	/** Gets user keys.
 	 * @author Francis Fasola
-	 * @return The list of keys imported into the wallet.
-	 */
+	 * @return The list of keys imported into the wallet. */
 	public List<ECKey> getKeys() {
 		return this.wallet.getImportedKeys();
 	}
 	
+	/** Gets the User.
+	 * @return Current user. */
 	public User getUser() {
 		return this.user;
 	}
 	
-	/**
+	/** Sends Bitcoin to the specified bitcoin address.
 	 * @author Francis Fasola
-	 * Sends Bitcoin to the specified bitcoin address.
-	 * 
-	 * @param peers The peer group the wallet is apart of. 
 	 * @param address String representation of the public address.
-	 * @param amount The amount of Bitcoin to send (uses {@link Coin.parseCoin}). 
-	 * @return True if transaction was successful, else false.
-	 * @throws {@link InsufficientMoneyException}
-	 * @throws {@link ExecutionException}
-	 * @throws {@link InterruptedException}
-	 */
+	 * @param amount The amount of Bitcoin to send.
+	 * @throws InsufficientMoneyException Not enough money.
+	 * @throws ExecutionException Error during execution.
+	 * @throws InterruptedException Error during execution. */
 	@SuppressWarnings("deprecation")
 	public void sendBitcoin(String address, String amount) 
 				throws InsufficientMoneyException, ExecutionException, InterruptedException {
@@ -222,15 +191,12 @@ public class WalletController
 		}, MoreExecutors.sameThreadExecutor());
 	}
 	
-	/**
+	/** When coins are received this will report information; used as an event listener.
 	 * @author Francis Fasola
-	 * When coins are received this will report information; used as an event listner.
-	 * 
 	 * @param wallet The wallet receiving the coins.
 	 * @param tx The transaction sending the coins.
 	 * @param prevBalance The previous balance of the wallet.
-	 * @param newBalance The new balance of the wallet.
-	 */
+	 * @param newBalance The new balance of the wallet. */
 	private void coinsRecevied(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance) {
 		Coin value = tx.getValueSentToMe(wallet);
 		JOptionPane.showMessageDialog(null, "Coins receive.\nHASH: " + tx.getHashAsString() + 
@@ -240,30 +206,19 @@ public class WalletController
 									value.toFriendlyString() + ": " + tx);
 	}
 	
-	/***
-	 * @author Francis Fasola
-	 * Adds the event listeners to the wallet.
-	 */
+	/** Adds the event listeners to the wallet.
+	 * @author Francis Fasola */
 	private void addEventListeners() {
-		//onCoinsReceived(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance)
 		this.wallet.addCoinsReceivedEventListener(this::coinsRecevied);
-		//			onCoinsSent(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance)
+		
 		this.wallet.addCoinsSentEventListener(new WalletCoinsSentEventListener() {
-			
 			@Override
 			public void onCoinsSent(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance) {
 				JOptionPane.showMessageDialog(null, "RECEIVED: " + tx.getValue(wallet).toFriendlyString() + " . NEW BALANCE: " 
 						+ wallet.getBalance().toFriendlyString(), "****** COINS SENT ******", JOptionPane.OK_OPTION);	
 			}
 		});
-		// 			onTransactionConfidenceChanged(Wallet wallet, Transaction tx)
-		/*this.wallet.addTransactionConfidenceEventListener((wallet, tx) -> {
-			System.out.println("***** CONFIDENCE CHANGED *****");
-			System.out.println("HASH: " + tx.getHashAsString());
-			TransactionConfidence c = tx.getConfidence();
-			System.out.println("NEW BLOCK DEPTH: " + c.getDepthInBlocks());
-		});*/
-		// 			onKeysAdded(List<ECKey> keys)
+
 		this.wallet.addKeyChainEventListener(e -> {
 			JOptionPane.showMessageDialog(null, "Key added.", "", JOptionPane.OK_OPTION);
 		});
@@ -300,34 +255,24 @@ public class WalletController
 		});
 	}
 	
-	/***
-	 * Returns the list of Friend Objects for the user.
+	/** Returns the list of Friend Objects for the user.
 	 * @author Francis Fasola
-	 * @return List of Friend Objects.
-	 */
+	 * @return List of Friend Objects. */
 	public List<Friend> getFriendsKeys() {
 		return this.user.getFriendKeys();
 	}
 	
-	/***
-	 * Adds a key to the list of friend keys.
+	/**  Adds a key to the list of friend keys.
 	 * @author Francis Fasola
-	 * 
 	 * @param name Alias for the given key.
-	 * @param key Public key of the alias.
-	 */
+	 * @param key Public key of the alias. */
 	public void addFriend(String name, String key) {
 		this.user.getFriendKeys().add(new Friend(name, key));
 		saveUser();
 	}
 	
-	/***
-	 * @author Francis Fasola
-	 * Loads the user into the WalletController.
-	 * 
-	 * @throws IOException If the file is not found.
-	 * @throws Exception Any other errors.
-	 */
+	/** Loads the user into the WalletController.
+	 * @author Francis Fasola */
 	public void loadUser() {
 		ObjectInputStream stream = null;
 		File file = new File(Utils.getSystemPath(user.getUsername() + "\\friends.ser"));
@@ -358,13 +303,8 @@ public class WalletController
 		}
 	}
 	
-	/***
-	 * Saves the current user.
-	 * @author Francis Fasola
-	 * 
-	 * @throws IOException If the file path is not valid.
-	 * @throws Exception Any other exceptions.
-	 */
+	/** Saves the current user.
+	 * @author Francis Fasola */
 	public void saveUser() {		
 		File file = new File(Utils.getSystemPath(user.getUsername() + "\\friends.ser"));
 		try {

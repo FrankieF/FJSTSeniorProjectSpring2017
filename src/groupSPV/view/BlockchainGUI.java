@@ -55,10 +55,10 @@ public class BlockchainGUI extends JFrame {
 		this.kit = kit;
 
 		
-		/**************************************
-		/	      Setup of the table	   	  /
-		/									  /
-		/*************************************/
+		/* *************************************
+		/	      Setup of the table	   	   /
+		/									   /
+		/**************************************/
 		table = new JTable();
 		table.setModel(new DefaultTableModel(
 			new Object[][] {},
@@ -75,19 +75,19 @@ public class BlockchainGUI extends JFrame {
 		table.getColumnModel().getColumn(1).setMaxWidth(650);
 		scrollPane = new JScrollPane(table);
 		
-		/**************************************
-		/	      Setup of the JButtons   	  /
-		/									  /
-		/*************************************/
+		/* *************************************
+		/	       Setup of the JButtons   	   /
+		/	 								   /
+		/* ************************************/
 		btnOpenWallet = new JButton("Wallet");
 		
 		btnMoreInfo = new JButton("More Info");
 		btnMoreInfo.setVisible(false);
 		
-		/**************************************
-		/	      Adding Listeners to    	  /
-		/		  components				  /
-		/*************************************/
+		/* *************************************
+		/	      Adding Listeners to    	   /
+		/		  components				   /
+		/* ************************************/
 		btnMoreInfo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				ExtendedBlockchain ebc;
@@ -114,10 +114,10 @@ public class BlockchainGUI extends JFrame {
 			}
 		});
 		
-		/**************************************
-		/	     Adding components to 	   	  /
-		/		  	contentpane				  /
-		/*************************************/
+		/* *************************************
+		/	     Adding components to 	   	   /
+		/		  	contentpane				   /
+		/* ************************************/
 		getContentPane().add(scrollPane);
 		getContentPane().add(btnMoreInfo);
 		getContentPane().add(btnOpenWallet);
@@ -128,10 +128,10 @@ public class BlockchainGUI extends JFrame {
 			System.err.println(bse.getMessage());
 		}
 		
-		/**************************************
-		/	      	Setup of constraints   	  /
-		/		  							  /
-		/*************************************/
+		/* *************************************
+		/	      	Setup of constraints   	   /
+		/		  							   /
+		/  ************************************/
 		springLayout.putConstraint(SpringLayout.NORTH, scrollPane, 50, SpringLayout.NORTH, getContentPane());
 		springLayout.putConstraint(SpringLayout.WEST, scrollPane, 50, SpringLayout.WEST, getContentPane());
 		springLayout.putConstraint(SpringLayout.SOUTH, scrollPane, -50, SpringLayout.SOUTH, getContentPane());
@@ -148,7 +148,7 @@ public class BlockchainGUI extends JFrame {
 	}
 
 	/** Updates table for blocks
-	 * @throws BlockStoreException */
+	 * @throws BlockStoreException Occurs when requested Block is not available. */
 	public void updateTable() throws BlockStoreException {
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		model.setRowCount(0);
@@ -164,8 +164,7 @@ public class BlockchainGUI extends JFrame {
 		}
 	}
 	
-	/** Hides the button after selecting a block to expand
-	 */
+	/** Hides the button after selecting a block to expand */
 	public static void hideBtnMoreInfo(){
 		btnMoreInfo.setVisible(false);
 	}

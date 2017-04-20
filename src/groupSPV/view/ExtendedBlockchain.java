@@ -25,28 +25,18 @@ import groupSPV.model.BigCoin;
 * @author James Donnell
 * @author Spencer Escalante
 * @author Trevor Silva */
-public class ExtendedBlockchain extends JFrame{
+public class ExtendedBlockchain extends JFrame {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
+	private static final long serialVersionUID = -4831226248088383161L;
+	
+	/** Full block received from peer. */
 	private Block fullBlock;
+	/** Transaction JTable. */
 	private JTable table;
+	/** ScrollPane for Transaction Table. */
 	private JScrollPane scrollPane;
-	private JLabel lblAmount;
-	private JLabel lblDifficulty;
-	private JLabel lblNonce;
-	private JLabel lblMessageSize;
-	private JLabel lblMerkleRoot;
-	private JLabel lblWork;
-	private JLabel lblA;
-	private JLabel lblDPW;
-	private JLabel lblN;
-	private JLabel lblMS;
-	private JLabel lblMR;
-	private JLabel lblW;
+	/** JLabel for Block information. */
+	private JLabel lblAmount, lblDifficulty, lblNonce, lblMessageSize, lblMerkleRoot, lblWork, lblA, lblDPW, lblN, lblMS, lblMR, lblW;
 	
 	public ExtendedBlockchain(int blockNumber, Block b) {
 		super("Block: " + blockNumber + (Utils.isTestNetwork() ? " (TESTNET)" : ""));
@@ -57,10 +47,10 @@ public class ExtendedBlockchain extends JFrame{
 		getContentPane().setLayout(springLayout);
 		
 		
-		/**************************************
-		/	      Setup of the table	   	  /
-		/		  with scrollpane			  /
-		/*************************************/
+		/* *************************************
+		/	      Setup of the table	   	   /
+		/		  with scrollpane			   /
+		/* ************************************/
 		table = new JTable();
 		table.setModel(new DefaultTableModel(new Object[][] {}, new String[] { "Transactoin Hash" }) {
 			private static final long serialVersionUID = 1L;
@@ -71,10 +61,10 @@ public class ExtendedBlockchain extends JFrame{
 		});
 		scrollPane = new JScrollPane(table);
 		
-		/**************************************
-		/	      Setup of the JPanel   	  /
-		/									  /
-		/*************************************/		
+		/* *************************************
+		/	      Setup of the JPanel   	   /
+		/									   /
+		/* ************************************/		
 		BigCoin totalCoins = BigCoin.totalTransactions(fullBlock.getTransactions());
 		ConversionRate.update(ConversionRate.SupportedCurrency.America);
 		String usdString = ConversionRate.convert(totalCoins).setScale(2, RoundingMode.HALF_UP).toPlainString();
@@ -92,11 +82,11 @@ public class ExtendedBlockchain extends JFrame{
 		lblMR = new JLabel(String.valueOf(fullBlock.getMerkleRoot().toString()));
 		lblW = new JLabel(String.valueOf(fullBlock.getWork())  + " tries");
 		
-		/**************************************
-		/	      Add Everything to 	   	  /
-		/		     contentpane			  /
-		/*************************************/
-    getContentPane().add(scrollPane);
+		/* *************************************
+		/	      Add Everything to 	   	   /
+		/		     contentpane			   /
+		/* ************************************/
+		getContentPane().add(scrollPane);
 		getContentPane().add(lblAmount);
 		getContentPane().add(lblDifficulty);
 		getContentPane().add(lblNonce);
@@ -112,17 +102,10 @@ public class ExtendedBlockchain extends JFrame{
 		
 		update();		
 
-		/**************************************
-		/	      Constraint setup		   	  /
-		/									  /
-		/*************************************/
-		//springLayout.putConstraint(SpringLayout.NORTH, scrollPane, 150, SpringLayout.NORTH, getContentPane());
-		//springLayout.putConstraint(SpringLayout.SOUTH, scrollPane, -10, SpringLayout.SOUTH, getContentPane());
-		//springLayout.putConstraint(SpringLayout.EAST, scrollPane, -10, SpringLayout.EAST, getContentPane());
-
-		//springLayout.putConstraint(SpringLayout.WEST, scrollPane, 0, SpringLayout.WEST, lblDifficulty);
-		//springLayout.putConstraint(SpringLayout.NORTH, lblDifficulty, 34, SpringLayout.NORTH, getContentPane());
-		//springLayout.putConstraint(SpringLayout.WEST, lblDifficulty, 10, SpringLayout.WEST, getContentPane());
+		/* *************************************
+		/	      Constraint setup		   	   /
+		/									   /
+		/* ************************************/
 		springLayout.putConstraint(SpringLayout.NORTH, scrollPane, 175, SpringLayout.NORTH, getContentPane());
 		springLayout.putConstraint(SpringLayout.SOUTH, scrollPane, -10, SpringLayout.SOUTH, getContentPane());
 		springLayout.putConstraint(SpringLayout.EAST, scrollPane, -10, SpringLayout.EAST, getContentPane());
@@ -138,14 +121,6 @@ public class ExtendedBlockchain extends JFrame{
 		springLayout.putConstraint(SpringLayout.WEST, lblNonce, 0, SpringLayout.WEST, lblDifficulty);
 
 		springLayout.putConstraint(SpringLayout.NORTH, lblMessageSize, 6, SpringLayout.SOUTH, lblNonce);
-		
-    //springLayout.putConstraint(SpringLayout.WEST, lblMessageSize, 0, SpringLayout.WEST, lblDifficulty);
-		
-		//springLayout.putConstraint(SpringLayout.NORTH, lblMerkleRoot, 6, SpringLayout.SOUTH, lblMessageSize);
-		//springLayout.putConstraint(SpringLayout.WEST, lblMerkleRoot, 0, SpringLayout.WEST, lblDifficulty);
-		
-		//springLayout.putConstraint(SpringLayout.NORTH, lblWork, 6, SpringLayout.SOUTH, lblMerkleRoot);
-		//springLayout.putConstraint(SpringLayout.WEST, lblWork, 0, SpringLayout.WEST, lblDifficulty);
 		springLayout.putConstraint(SpringLayout.WEST, lblMessageSize, 0, SpringLayout.WEST, lblAmount);
 		
 		springLayout.putConstraint(SpringLayout.NORTH, lblMerkleRoot, 6, SpringLayout.SOUTH, lblMessageSize);
@@ -175,9 +150,7 @@ public class ExtendedBlockchain extends JFrame{
 		Utils.setWindowCenterOfScreen(this);
 	}
 	
-	/**
-	 * Updates the table that contains Transaction Hashes
-	 */
+	/** Updates the table that contains Transaction Hashes */
 	public void update(){
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		for (Transaction t : fullBlock.getTransactions()) {

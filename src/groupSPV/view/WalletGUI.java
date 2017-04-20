@@ -36,31 +36,24 @@ import groupSPV.model.Friend;
 public class WalletGUI extends JFrame{
 	
 	private static final long serialVersionUID = 1L;
-	private WalletController wc;
-	private JTable keyTable;
-	private JTable transactionTable;
-	private JTable pendingTransactionTable;
-	private JTable friendTable;
-	private JScrollPane keyScrollPane;
-	private JScrollPane pendingTransactionScrollPane;
-	private JScrollPane transactionScrollPane;
-	private JScrollPane friendScrollPane;
-	private JButton sendButton;
-	private JButton addFriendButton;
-	private JLabel lblBitcoinValueAmount;
-	private JLabel lblCurrentBalanceAmount;
-	private JTextPane addressPane;
-	private JTextPane amountPane;
-	private JTextPane nameTextPane;
-	private JTextPane publicKeyTextPane;
-	private JTextPane keyPane;
-	private JButton addKeyButton;
-	private JButton randomKeyButton;
-	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	private JButton copyKeyButton;
-	private JButton sendFriendButton;
-	private JButton copyTransactionButton;
 	
+	/** Current WalletController. */
+	private WalletController wc;
+	/** Table for data/information. */
+	private JTable keyTable, transactionTable, pendingTransactionTable, friendTable;
+	/** ScrollPane for Table scrolling. */
+	private JScrollPane keyScrollPane, pendingTransactionScrollPane, transactionScrollPane, friendScrollPane;
+	/** JButton for user functionality. */
+	private JButton sendButton, addFriendButton, addKeyButton, randomKeyButton, copyKeyButton, sendFriendButton, copyTransactionButton;
+	/** JLabel for information. */
+	private JLabel lblBitcoinValueAmount, lblCurrentBalanceAmount;
+	/** JTextPane for user input. */
+	private JTextPane addressPane, amountPane, nameTextPane, publicKeyTextPane, keyPane;
+	/** Date Format for Key creation time. */
+	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
+	/** Creates the WalletGUI with a supplied WalletController.
+	 * @param walletController WalletController to build from. */
 	public WalletGUI(WalletController walletController){
 		super(walletController.getUser().getUsername() + "'s Wallet." + (Utils.isTestNetwork() ? " (TESTNET)" : ""));
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -406,9 +399,9 @@ public class WalletGUI extends JFrame{
 		setVisible(true);
 	}
 	
-	/* ----------------------
+	/* ----------------
 	 * Update Functions
-	 * ---------------------- */
+	 * ---------------- */
 	/** Updates the BTC and USD balance.
 	 * @param availableBalance Available balance to show. */
 	public void updateBalance(Coin availableBalance) {

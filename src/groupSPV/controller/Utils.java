@@ -8,25 +8,18 @@ import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.math.BigDecimal;
 
-import javax.swing.JFrame;
-
 import groupSPV.model.CustomKit;
 import groupSPV.model.CustomNBBL;
 import groupSPV.model.User;
 import groupSPV.view.BlockchainGUI;
-import groupSPV.view.SyncGUI;
 
-/**
+/**This class acts as a utility class for the entire project. Methods that are used
+ * in more than one place can be placed here as static methods to avoid duplicating code.
  * @author Frank Fasola
  * @author James Donnell
  * @author Spencer Escalante
- * @author Trevor Silva
- * 
- * This class acts as a utility class for the entire project. Methods that are used
- * in more than one place can be placed here as static methods to avoid duplicating code.
- */
+ * @author Trevor Silva */
 public class Utils {
-	
 	/** Default path name, unrelated to appdata folder. */
 	private static final String defaultPath = "SeniorProject_Bitcoin_Client\\";
 	
@@ -62,11 +55,8 @@ public class Utils {
 	/** Starts BlockchainGUI with particular user.
 	 * @param user User to start GUI with. */
 	public static void startGUI(User user) {
-		//JFrame syncScreen = new SyncGUI("Updating blockchain for " + user.getUsername() + " ...");
-		
-		CustomKit kit = new CustomKit(Utils.isTestNetwork(), new File(getUserPath(user)), user);
+		CustomKit kit = new CustomKit(isTestNetwork(), new File(getUserPath(user)), user);
 		kit.startAndWait();
-		//syncScreen.dispose();
 		
 		BlockchainGUI bcGUI = new BlockchainGUI(kit);
 		kit.addNewBestBlockListener(new CustomNBBL(bcGUI));
@@ -93,8 +83,8 @@ public class Utils {
 	
 	/** Returns a formatted BigDecimal with the minimum nubmer of decimal places specified without rounding.
 	 * 
-	 * Usage:	Utils.setMinimumDecimalPlaces(new BigDecimal("5"), 2) --> 2.00
-	 * 			Utils.setMinimumDecimalPlaces(new BigDecimal("5.0675"), 2) --> 5.0675
+	 * Usage:	Utils.setMinimumDecimalPlaces(new BigDecimal("5"), 2) to 2.00
+	 * 			Utils.setMinimumDecimalPlaces(new BigDecimal("5.0675"), 2) to 5.0675
 	 * 
 	 * @param bigDecimal BigDecimal to format.
 	 * @param minDecimalPlaces Minimum number of decimal places.
