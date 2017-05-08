@@ -1,6 +1,6 @@
 Specification Document:		https://github.com/FrankieF/FJSTSeniorProjectSpring2017/blob/master/BitcoinSpecificationDocument.pdf
 
-Design Document:			https://github.com/FrankieF/FJSTSeniorProjectSpring2017/blob/master/BitcoinDesignDocument.pdf
+Design Document:			https://github.com/FrankieF/FJSTSeniorProjectSpring2017/blob/master/Bitcoin_Design_Document_Final.pdf
 
 Javadoc Location:			https://frankief.github.io/FJSTSeniorProjectSpring2017/
 
